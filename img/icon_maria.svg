@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1152" height="1152" viewBox="0 0 1152 1152">
+  <defs>
+    <linearGradient id="linear-gradient" y1="1.151" x2="1" y2="-0.193" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#f30"/>
+      <stop offset="1" stop-color="#f9f"/>
+    </linearGradient>
+    <clipPath id="clip-PNG_Icone_iOS_1">
+      <rect width="1152" height="1152"/>
+    </clipPath>
+  </defs>
+  <g id="PNG_Icone_iOS_1" data-name="PNG Icone iOS – 1" clip-path="url(#clip-PNG_Icone_iOS_1)">
+    <rect width="1152" height="1152" fill="#fff"/>
+    <rect id="Rectangle_6" data-name="Rectangle 6" width="1152" height="1152" fill="#fff"/>
+    <rect id="Rectangle_7" data-name="Rectangle 7" width="1152" height="1152" fill="none"/>
+    <path id="Path_15" data-name="Path 15" d="M902.008,1151.5H249.492C111.7,1151.5,0,1039.8,0,902.008V249.492C0,111.7,111.7,0,249.492,0H902.008C1039.8,0,1151.5,111.7,1151.5,249.492V902.008c0,137.8-111.7,249.492-249.492,249.492" transform="translate(0.5 0.5)" fill="none"/>
+    <g id="Group_1438" data-name="Group 1438" transform="translate(113.961 -39.149)">
+      <rect id="Rectangle_3" data-name="Rectangle 3" width="921.6" height="921.6" transform="translate(1.039 154.35)" fill="#f2eeec" opacity="0"/>
+      <path id="Path_4" data-name="Path 4" d="M885.756,126.54q-30.892-53.762-86.229-83.516-55.3-29.754-127.134-29.783-104.88,0-171,61a246.587,246.587,0,0,0-39.881,48.336,246.553,246.553,0,0,0-39.9-48.336q-66.108-61.009-170.979-61-71.854,0-127.153,29.783Q68.152,72.75,37.269,126.54,6.349,180.273,6.377,248.558q0,117.63,59.623,198.985,59.623,81.336,194.684,142.345c47.6,21.5,65.16,29.858,131.5,50l-59.471,35.275,16.385,22.648c125.257-33.067,223.206-67.247,313.228-107.92q135.09-61.009,194.7-142.345,59.623-81.365,59.623-198.985,0-68.313-30.892-122.019" transform="translate(-0.374 280.948)" fill="url(#linear-gradient)"/>
+      <rect id="Rectangle_4" data-name="Rectangle 4" width="921.6" height="921.6" transform="translate(1.039 154.35)" fill="none"/>
+    </g>
+  </g>
+</svg>
