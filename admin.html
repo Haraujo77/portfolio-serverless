@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Portfolio CMS</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    #projectList {
+      list-style: none;
+      padding: 0;
+    }
+    #projectList li {
+      margin: 10px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-actions button {
+      padding: 5px 10px;
+      margin-left: 5px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      font-size: 14px;
+    }
+    .project-actions button:hover {
+      background: #0056b3;
+    }
+    .project-actions .delete-btn {
+      background: #dc3545;
+    }
+    .project-actions .delete-btn:hover {
+      background: #c82333;
+    }
+    .edit-form {
+      display: none;
+      margin-top: 10px;
+      padding: 15px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+      background: #f8f9fa;
+    }
+    .edit-form.active {
+      display: block;
+    }
+    .form-container {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: #f8f9fa;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      color: #555;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    textarea {
+      height: 80px;
+      resize: vertical;
+    }
+    button {
+      padding: 8px 15px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .sortable-ghost {
+      opacity: 0.5;
+      background: #e9ecef;
+    }
+    #error {
+      color: red;
+      margin-top: 10px;
+    }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    .success {
+      background-color: #dff0d8;
+      color: #3c763d;
+    }
+    .error {
+      background-color: #f2dede;
+      color: #a94442;
+    }
+    .info-box {
+      background-color: #d9edf7;
+      color: #31708f;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 5px;
+      border: 1px solid #bce8f1;
+    }
+    .download-btn {
+      background: #5cb85c;
+    }
+    .download-btn:hover {
+      background: #4cae4c;
+    }
+  </style>
+</head>
+<body>
+  <h1>Manage Projects</h1>
+  
+  <div class="info-box">
+    <h3>Serverless Mode Information</h3>
+    <p>This is the admin panel running in serverless mode. Changes are made locally in your browser and will require you to download the updated JSON files and replace them in your project.</p>
+    <p>To save changes permanently:</p>
+    <ol>
+      <li>Make your changes in this interface</li>
+      <li>Click the "Download JSON" button</li>
+      <li>Replace the corresponding file in your js/ directory</li>
+    </ol>
+  </div>
+
+  <!-- Intro Text Management Section -->
+  <div class="form-container">
+    <h2>Edit Intro Text</h2>
+    <label for="introPara1">Intro Paragraph 1:</label>
+    <textarea id="introPara1" rows="5" placeholder="First paragraph of the intro section"></textarea>
+    <label for="introPara2">Intro Paragraph 2:</label>
+    <textarea id="introPara2" rows="5" placeholder="Second paragraph of the intro section"></textarea>
+    <label for="linkedinUrl">LinkedIn URL:</label>
+    <input type="text" id="linkedinUrl" placeholder="Your LinkedIn profile URL">
+    <button onclick="saveIntroText()">Save Intro Text</button>
+    <button class="download-btn" onclick="downloadIntroJson()">Download Intro JSON</button>
+    <div id="introStatus" class="status"></div>
+  </div>
+
+  <!-- Add Project Form -->
+  <div class="form-container">
+    <h2>Add New Project</h2>
+    <label for="name">Name:</label>
+    <input type="text" id="name" placeholder="Project Name">
+    <label for="category">Category:</label>
+    <input type="text" id="category" placeholder="Category">
+    <label for="year">Year:</label>
+    <input type="number" id="year" placeholder="Year">
+    <label for="icon">Icon URL:</label>
+    <input type="text" id="icon" placeholder="e.g., /img/icon_project.svg">
+    <label for="description">Description:</label>
+    <textarea id="description" placeholder="Description"></textarea>
+    <label for="why">Why:</label>
+    <textarea id="why" placeholder="Why"></textarea>
+    <label for="how">How:</label>
+    <textarea id="how" placeholder="How"></textarea>
+    <label for="context">Context:</label>
+    <textarea id="context" placeholder="Context"></textarea>
+    <label for="team">Team:</label>
+    <textarea id="team" placeholder="Team"></textarea>
+    <label for="role">My Role:</label>
+    <textarea id="role" placeholder="My Role"></textarea>
+    <label for="media">Media (JSON):</label>
+    <textarea id="media" placeholder='e.g., [{"type": "image", "src": "/img/cover.png", "alt": "Cover", "class": "first-image"}]'></textarea>
+    <button onclick="addProject()">Add Project</button>
+  </div>
+  
+  <!-- Project Management Tools -->
+  <div class="form-container">
+    <h2>Project Management</h2>
+    <button class="download-btn" onclick="downloadProjectsJson()">Download Projects JSON</button>
+    <div id="projectsStatus" class="status"></div>
+  </div>
+
+  <!-- Project List -->
+  <ul id="projectList" class="sortable"></ul>
+  <div id="error"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  <script>
+    // Global variables
+    let projects = [];
+    let introData = {};
+    let nextId = 1; // For new projects in serverless mode
+    
+    // Load Projects
+    function loadProjects() {
+      console.log('Attempting to load projects from js/projects.json');
+      fetch('js/projects.json')
+        .then(res => {
+          console.log('Fetch response status:', res.status, res.statusText);
+          if (!res.ok) {
+            console.error(`Error loading projects: ${res.status} ${res.statusText}`);
+            document.getElementById('error').innerText = `Error loading projects: ${res.status} ${res.statusText}`;
+            return res.text().then(text => {
+              try {
+                // Try to parse as JSON for error details
+                return JSON.parse(text);
+              } catch (e) {
+                // If not JSON, show the raw text
+                throw new Error(`${res.status} ${res.statusText}: ${text}`);
+              }
+            });
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data.error) {
+            throw new Error(data.error);
+          }
+          console.log('Projects loaded successfully:', data);
+          if (!Array.isArray(data)) {
+            console.error('Data is not an array:', data);
+            document.getElementById('error').innerText = 'Error: Projects data is not in expected format (not an array)';
+            return;
+          }
+          if (data.length === 0) {
+            console.warn('Projects array is empty');
+            document.getElementById('error').innerText = 'No projects found. You can add new projects using the form above.';
+          }
+          
+          projects = data;
+          
+          // Add missing properties for compatibility
+          projects.forEach((project, index) => {
+            // Assign IDs if missing
+            if (!project.id) {
+              project.id = index + 1;
+            }
+            // Assign order_position if missing
+            if (!project.order_position) {
+              project.order_position = index + 1;
+            }
+            // Track highest ID for new projects
+            if (project.id >= nextId) {
+              nextId = project.id + 1;
+            }
+          });
+          
+          // Sort by order_position
+          projects.sort((a, b) => a.order_position - b.order_position);
+          renderProjects();
+        })
+        .catch(err => {
+          document.getElementById('error').innerText = `Error loading projects: ${err.message}`;
+          console.error('Project loading error:', err);
+        });
+    }
+
+    // Render Projects
+    function renderProjects() {
+      const list = document.getElementById('projectList');
+      list.innerHTML = '';
+      projects.forEach(p => {
+        const li = document.createElement('li');
+        li.setAttribute('data-id', p.id); // Ensure this is numeric and unique
+        li.innerHTML = `
+          <div class="project-header">
+            <span>${p.name} (${p.year})</span>
+            <div class="project-actions">
+              <button onclick="toggleHide(${p.id}, ${p.hidden})">${p.hidden ? 'Show' : 'Hide'}</button>
+              <button onclick="showEditForm(${p.id})">Edit</button>
+              <button class="delete-btn" onclick="deleteProject(${p.id})">Delete</button>
+            </div>
+          </div>
+          <div id="editForm_${p.id}" class="edit-form">
+            <h3>Edit ${p.name}</h3>
+            <label>Name:</label><input type="text" id="edit_name_${p.id}" value="${p.name}">
+            <label>Category:</label><input type="text" id="edit_category_${p.id}" value="${p.category}">
+            <label>Year:</label><input type="number" id="edit_year_${p.id}" value="${p.year}">
+            <label>Icon URL:</label><input type="text" id="edit_icon_${p.id}" value="${p.icon}">
+            <label>Description:</label><textarea id="edit_description_${p.id}">${p.description}</textarea>
+            <label>Why:</label><textarea id="edit_why_${p.id}">${p.why}</textarea>
+            <label>How:</label><textarea id="edit_how_${p.id}">${p.how}</textarea>
+            <label>Context:</label><textarea id="edit_context_${p.id}">${p.context}</textarea>
+            <label>Team:</label><textarea id="edit_team_${p.id}">${p.team}</textarea>
+            <label>Role:</label><textarea id="edit_role_${p.id}">${p.role}</textarea>
+            <label>Media (JSON):</label><textarea id="edit_media_${p.id}">${JSON.stringify(p.media, null, 2)}</textarea>
+            <button onclick="updateProject(${p.id})">Save</button>
+            <button onclick="hideEditForm(${p.id})">Cancel</button>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+
+      // Initialize Sortable with debugging and dataIdAttr
+      new Sortable(list, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        dataIdAttr: 'data-id', // Explicitly specify the attribute for IDs
+        onStart: function (evt) {
+          console.log('Drag started, item ID:', evt.item.getAttribute('data-id'));
+        },
+        onEnd: function (evt) {
+          const currentOrder = projects.map(p => p.id);
+          const currentOrderNames = currentOrder.map(id => projects.find(p => p.id === id).name);
+          console.log('Order before change (IDs):', currentOrder);
+          console.log('Order before change (Names):', currentOrderNames);
+
+          const newOrder = Array.from(list.children).map(li => {
+            const id = parseInt(li.getAttribute('data-id'), 10); // Ensure numeric parsing
+            console.log('Item in new order, ID:', id, 'Position:', Array.from(list.children).indexOf(li), 'Name:', projects.find(p => p.id === id)?.name || 'Unknown');
+            return id;
+          });
+
+          // Validate newOrder for uniqueness and correctness
+          const uniqueIds = new Set(newOrder);
+          if (uniqueIds.size !== newOrder.length) {
+            console.error('Duplicate IDs detected in newOrder:', newOrder);
+            return; // Prevent updating if invalid
+          }
+          console.log('New order before sending (IDs):', newOrder);
+          const newOrderNames = newOrder.map(id => projects.find(p => p.id === id)?.name || 'Unknown');
+          console.log('New order before sending (Names):', newOrderNames);
+          updateProjectOrder(newOrder);
+        }
+      });
+    }
+
+    // Add Project
+    function addProject() {
+      const project = {
+        id: nextId++,
+        name: document.getElementById('name').value,
+        category: document.getElementById('category').value,
+        year: parseInt(document.getElementById('year').value),
+        icon: document.getElementById('icon').value,
+        description: document.getElementById('description').value,
+        why: document.getElementById('why').value,
+        how: document.getElementById('how').value,
+        context: document.getElementById('context').value,
+        team: document.getElementById('team').value,
+        role: document.getElementById('role').value,
+        hidden: 0,
+        order_position: projects.length + 1,
+        media: JSON.parse(document.getElementById('media').value || '[]')
+      };
+
+      projects.push(project);
+      showStatus('projectsStatus', `Project "${project.name}" added successfully. Don't forget to download the JSON file.`, 'success');
+      renderProjects();
+      
+      // Clear form
+      document.getElementById('name').value = '';
+      document.getElementById('category').value = '';
+      document.getElementById('year').value = '';
+      document.getElementById('icon').value = '';
+      document.getElementById('description').value = '';
+      document.getElementById('why').value = '';
+      document.getElementById('how').value = '';
+      document.getElementById('context').value = '';
+      document.getElementById('team').value = '';
+      document.getElementById('role').value = '';
+      document.getElementById('media').value = '[]';
+    }
+
+    // Toggle Hide
+    function toggleHide(id, current) {
+      // Get the full project details first
+      const projectToUpdate = projects.find(p => p.id === id);
+      if (!projectToUpdate) {
+        showStatus('error', `Project ID ${id} not found`, 'error');
+        return;
+      }
+      
+      // Update the hidden attribute
+      projectToUpdate.hidden = current ? 0 : 1;
+      
+      // Update the UI
+      showStatus('projectsStatus', `Project "${projectToUpdate.name}" is now ${projectToUpdate.hidden ? 'hidden' : 'visible'}. Don't forget to download the JSON file.`, 'success');
+      renderProjects();
+    }
+
+    // Show Edit Form
+    function showEditForm(id) {
+      document.getElementById(`editForm_${id}`).classList.add('active');
+    }
+
+    // Hide Edit Form
+    function hideEditForm(id) {
+      document.getElementById(`editForm_${id}`).classList.remove('active');
+    }
+
+    // Update Project
+    function updateProject(id) {
+      const projectToUpdate = projects.find(p => p.id === id);
+      if (!projectToUpdate) {
+        showStatus('error', `Project ID ${id} not found`, 'error');
+        return;
+      }
+      
+      try {
+        projectToUpdate.name = document.getElementById(`edit_name_${id}`).value;
+        projectToUpdate.category = document.getElementById(`edit_category_${id}`).value;
+        projectToUpdate.year = parseInt(document.getElementById(`edit_year_${id}`).value);
+        projectToUpdate.icon = document.getElementById(`edit_icon_${id}`).value;
+        projectToUpdate.description = document.getElementById(`edit_description_${id}`).value;
+        projectToUpdate.why = document.getElementById(`edit_why_${id}`).value;
+        projectToUpdate.how = document.getElementById(`edit_how_${id}`).value;
+        projectToUpdate.context = document.getElementById(`edit_context_${id}`).value;
+        projectToUpdate.team = document.getElementById(`edit_team_${id}`).value;
+        projectToUpdate.role = document.getElementById(`edit_role_${id}`).value;
+        
+        const mediaText = document.getElementById(`edit_media_${id}`).value;
+        projectToUpdate.media = JSON.parse(mediaText);
+        
+        showStatus('projectsStatus', `Project "${projectToUpdate.name}" updated successfully. Don't forget to download the JSON file.`, 'success');
+        hideEditForm(id);
+        renderProjects();
+      } catch (error) {
+        showStatus('error', `Error updating project: ${error.message}`, 'error');
+      }
+    }
+
+    // Delete Project
+    function deleteProject(id) {
+      if (!confirm(`Are you sure you want to delete this project?`)) return;
+      
+      const projectIndex = projects.findIndex(p => p.id === id);
+      if (projectIndex === -1) {
+        showStatus('error', `Project ID ${id} not found`, 'error');
+        return;
+      }
+      
+      const projectName = projects[projectIndex].name;
+      projects.splice(projectIndex, 1);
+      
+      // Update order positions
+      projects.forEach((p, idx) => {
+        p.order_position = idx + 1;
+      });
+      
+      showStatus('projectsStatus', `Project "${projectName}" deleted successfully. Don't forget to download the JSON file.`, 'success');
+      renderProjects();
+    }
+
+    // Update Project Order
+    function updateProjectOrder(newOrder) {
+      // Update the order_position property of each project based on new order
+      newOrder.forEach((id, index) => {
+        const project = projects.find(p => p.id === id);
+        if (project) {
+          project.order_position = index + 1;
+        }
+      });
+      
+      // Sort the projects array by order_position
+      projects.sort((a, b) => a.order_position - b.order_position);
+      
+      showStatus('projectsStatus', "Project order updated successfully. Don't forget to download the JSON file.", 'success');
+      renderProjects();
+    }
+
+    // Download Projects JSON
+    function downloadProjectsJson() {
+      // Create a clean copy of projects without any unnecessary properties
+      const cleanProjects = projects.map(p => {
+        // Keep only the essential properties
+        return {
+          name: p.name,
+          category: p.category,
+          year: p.year,
+          icon: p.icon,
+          description: p.description,
+          why: p.why,
+          how: p.how,
+          context: p.context,
+          team: p.team,
+          role: p.role,
+          hidden: p.hidden,
+          media: p.media,
+          // Include these for compatibility but they can be removed if not needed
+          id: p.id,
+          order_position: p.order_position
+        };
+      });
+      
+      // Sort by order_position before download
+      cleanProjects.sort((a, b) => a.order_position - b.order_position);
+      
+      // Create a Blob with the JSON data
+      const blob = new Blob([JSON.stringify(cleanProjects, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create a link and trigger the download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'projects.json';
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showStatus('projectsStatus', 'Projects JSON file downloaded. Please move it to your js/ directory.', 'success');
+    }
+
+    // Load Intro Text
+    function loadIntroText() {
+      fetch('js/intro.json')
+        .then(res => {
+          if (!res.ok) {
+            console.error(`API error: ${res.status} ${res.statusText}`);
+            if (res.status === 404) {
+              // If intro text doesn't exist yet, fill with default text
+              document.getElementById('introPara1').value = 
+                '<strong>Hey, I\'m Helder</strong> —a product designer with over 20 years of experience at the intersection of branding, UX/UI, and AI. I\'m all about creating new things—products, services, ideas. I blend design with a healthy dose of entrepreneurial hustle to help founders and companies bring cool stuff to life. I\'ve worked with global brands, co-founded startups, led teams, and kept my hands dirty in the actual design work.';
+              
+              document.getElementById('introPara2').value = 
+                '<strong>Let\'s Create Together</strong><br>If you\'ve got something brewing or just want to explore what\'s possible, hit me up.<br><a href="https://www.linkedin.com/in/helderaraujo/" class="linkedin-button" target="_blank" rel="noopener">LinkedIn</a>';
+              
+              document.getElementById('linkedinUrl').value = 'https://www.linkedin.com/in/helderaraujo/';
+              
+              // Initialize introData
+              introData = {
+                para1: document.getElementById('introPara1').value,
+                para2: document.getElementById('introPara2').value,
+                updated_at: new Date().toISOString().replace('T', ' ').substr(0, 19)
+              };
+              return;
+            }
+            throw new Error(`HTTP error! Status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data) {
+            introData = data;
+            document.getElementById('introPara1').value = data.para1;
+            document.getElementById('introPara2').value = data.para2;
+            
+            // Extract LinkedIn URL from para2 if available
+            const linkedinMatch = data.para2.match(/href="([^"]+)"/);
+            if (linkedinMatch && linkedinMatch[1]) {
+              document.getElementById('linkedinUrl').value = linkedinMatch[1];
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Error loading intro text:', err);
+          showStatus('introStatus', `Error loading intro text: ${err.message}`, 'error');
+        });
+    }
+
+    // Save Intro Text
+    function saveIntroText() {
+      try {
+        const para1 = document.getElementById('introPara1').value;
+        const para2 = document.getElementById('introPara2').value;
+        const linkedinUrl = document.getElementById('linkedinUrl').value;
+        
+        // Update LinkedIn URL in para2 if present
+        let updatedPara2 = para2;
+        if (linkedinUrl) {
+          // Check if para2 already has a LinkedIn link
+          if (updatedPara2.includes('href=')) {
+            updatedPara2 = updatedPara2.replace(/href="[^"]+"/g, `href="${linkedinUrl}"`);
+          } else if (!updatedPara2.includes('<a')) {
+            // Add LinkedIn link if not present
+            updatedPara2 += `<br><a href="${linkedinUrl}" class="linkedin-button" target="_blank" rel="noopener">LinkedIn</a>`;
+          }
+        }
+
+        introData = {
+          para1: para1,
+          para2: updatedPara2,
+          updated_at: new Date().toISOString().replace('T', ' ').substr(0, 19)
+        };
+
+        // If there was an id in the original data, preserve it
+        if (introData.id) {
+          introData.id = introData.id;
+        }
+
+        showStatus('introStatus', 'Intro text saved. Don\'t forget to download the JSON file.', 'success');
+      } catch (err) {
+        console.error('Error saving intro text:', err);
+        showStatus('introStatus', `Error saving intro text: ${err.message}`, 'error');
+      }
+    }
+
+    // Download Intro JSON
+    function downloadIntroJson() {
+      if (!introData || !introData.para1) {
+        showStatus('introStatus', 'No intro data to download', 'error');
+        return;
+      }
+      
+      // Create a clean copy of intro data
+      const cleanIntro = {
+        para1: introData.para1,
+        para2: introData.para2,
+        updated_at: introData.updated_at || new Date().toISOString().replace('T', ' ').substr(0, 19)
+      };
+      
+      // Add id if it existed in original data
+      if (introData.id) {
+        cleanIntro.id = introData.id;
+      }
+      
+      // Create a Blob with the JSON data
+      const blob = new Blob([JSON.stringify(cleanIntro, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create a link and trigger the download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'intro.json';
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showStatus('introStatus', 'Intro JSON file downloaded. Please move it to your js/ directory.', 'success');
+    }
+
+    // Helper function to show status messages
+    function showStatus(elementId, message, type) {
+      const statusEl = document.getElementById(elementId);
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`;
+      
+      // Auto-clear success messages after 5 seconds
+      if (type === 'success') {
+        setTimeout(() => {
+          statusEl.textContent = '';
+          statusEl.className = 'status';
+        }, 5000);
+      }
+    }
+
+    // Load data when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProjects();
+      loadIntroText();
+    });
+  </script>
+</body>
+</html>

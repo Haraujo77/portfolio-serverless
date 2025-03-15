@@ -1,6 +1,6 @@
 // Main.js - Dynamic Portfolio Renderer with Carousel
 (async function () {
-  console.log('Starting main.js');
+  console.log('Starting main.js - SERVERLESS VERSION');
 
   // Wait for DOM to be fully loaded before proceeding
   if (document.readyState === 'loading') {
