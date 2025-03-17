@@ -78,13 +78,14 @@
         // Ensure icon has a valid URL
         if (!project.icon || project.icon.includes('undefined')) {
           project.icon = placeholderUrl;
-        } else if (project.icon.startsWith('/img/')) {
+        } else if (project.icon.startsWith('/img/') || project.icon.startsWith('img/')) {
           // Convert local path to Cloudinary URL if not already a Cloudinary URL
           if (!project.icon.includes('cloudinary.com')) {
             // Extract filename from path
             const filename = project.icon.split('/').pop();
             // Use folder structure from local path
-            const folderPath = project.icon.replace('/img/', '').split('/').slice(0, -1).join('/');
+            // Handle paths with or without leading slash
+            const folderPath = project.icon.replace(/^\/?img\//, '').split('/').slice(0, -1).join('/');
             project.icon = `https://res.cloudinary.com/${cloudName}/image/upload/v1/portfolio/${folderPath}/${filename}`;
           }
         }

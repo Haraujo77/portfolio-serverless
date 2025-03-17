@@ -580,5 +580,20 @@
     ],
     "id": 10,
     "order_position": 10
+  },
+  {
+    "name": "",
+    "category": "About",
+    "year": "",
+    "icon": "https://res.cloudinary.com/dicwtd4pv/image/upload/v1742229348/portfolio/icon_helder_light_l6h4zc.png",
+    "description": "<strong>Helder Araújo</strong> is a Brazilian designer and creative director based in Lisbon. With a career spanning over 25 years, Helder specializes in design at the intersection of research, strategy, branding, and UX/UI. His work seamlessly blends design, technology, and entrepreneurial vision to create innovative products and services. Helder initially made his mark leading youth-focused research at Box1824, a globally recognized research firm. There, he founded Bola, a pioneering design studio known for its unique Sociology Design methodology, translating deep sociological insights into practical product and design strategies for global brands. Bola inspired Helder’s entrepreneurial journey, leading to his first startup, Busk—a real-time news search engine acquired by Globo—and subsequent ventures in information retrieval and machine learning, always emphasizing a strong, hands-on design approach. Recently, Helder has focused on developing and implementing AI solutions across finance, education, healthcare, and entertainment. His design perspective was deeply influenced by his creative residency at Fabrica, Benetton’s renowned communication research center in Italy.",
+    "why": "test",
+    "context": "test",
+    "team": "test",
+    "role": "test",
+    "hidden": 0,
+    "media": [],
+    "id": 11,
+    "order_position": 11
   }
 ]

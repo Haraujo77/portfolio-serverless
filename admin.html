@@ -262,10 +262,62 @@
       margin-bottom: 5px;
     }
     
-    .help-text {
-      font-size: 12px;
-      color: #6c757d;
-      margin-top: 5px;
+    /* Status message styles */
+    .status {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .status-testing {
+      background-color: #e9f5ff;
+      border: 1px solid #a8d4ff;
+      color: #0062cc;
+    }
+    
+    .status-info {
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      color: #343a40;
+    }
+    
+    .status-success {
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+    
+    .status-error {
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    
+    .status ul, .status ol {
+      margin-top: 10px;
+      padding-left: 20px;
+    }
+    
+    .status h4 {
+      margin-top: 15px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    
+    .status .btn-primary {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    
+    .status .btn-primary:hover {
+      background-color: #0069d9;
     }
     
     .json-support-info {
@@ -274,6 +326,106 @@
       border-radius: 4px;
       margin-top: 15px;
       font-size: 14px;
+    }
+    
+    /* Icon upload and preview styles */
+    .icon-upload-container {
+      margin-bottom: 15px;
+    }
+    
+    .icon-preview {
+      width: 100px;
+      height: 100px;
+      border: 1px dashed #ccc;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      background-color: #f8f9fa;
+      overflow: hidden;
+    }
+    
+    #iconPreviewImg {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .icon-placeholder {
+      color: #6c757d;
+      font-size: 14px;
+      text-align: center;
+      padding: 10px;
+    }
+    
+    .icon-input-group {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 5px;
+    }
+    
+    .icon-input-group input {
+      flex-grow: 1;
+    }
+    
+    /* Project list item icon styles */
+    .project-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .project-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 5px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+    }
+    
+    .project-icon img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .error-image {
+      opacity: 0.5;
+    }
+    
+    /* Secondary button style */
+    .secondary-btn {
+      background-color: #6c757d;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    
+    .secondary-btn:hover {
+      background-color: #5a6268;
+    }
+    
+    .status {
+      margin-top: 5px;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+    }
+    
+    .help-text {
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 5px;
     }
   </style>
   
@@ -341,11 +493,12 @@
       }
       
       // Convert local path to Cloudinary URL
-      if (path.startsWith('/img/')) {
+      if (path.startsWith('/img/') || path.startsWith('img/')) {
         // Extract filename from path
         const filename = path.split('/').pop();
         // Use folder structure from local path
-        const folderPath = path.replace('/img/', '').split('/').slice(0, -1).join('/');
+        // Handle paths with or without leading slash
+        const folderPath = path.replace(/^\/?img\//, '').split('/').slice(0, -1).join('/');
         
         // Determine resource type based on extension
         let resourceType = 'image';
@@ -387,20 +540,18 @@
     // Setup the upload widget
     let myWidget;
     function initializeWidget() {
-      // Check if the cloudinary widget script is loaded
       if (typeof cloudinary !== 'undefined') {
         try {
-          logDebug('Creating Cloudinary upload widget...');
-          logDebug('Configuration:', { cloudName, uploadPreset });
+          console.log('Creating new widget with preset:', uploadPreset);
           
-          // EXACT SAME CODE AS TEST PAGE
+          // Create the widget configuration
           myWidget = cloudinary.createUploadWidget({
             cloudName: cloudName,
             uploadPreset: uploadPreset,
-            sources: ['local'],
+            sources: ['local', 'url', 'camera'],
             multiple: false,
-            resourceType: 'raw',
-            showAdvancedOptions: true,
+            resourceType: 'auto', // Use 'auto' to detect resource type automatically
+            showAdvancedOptions: false,
             styles: {
               palette: {
                 window: "#FFFFFF",
@@ -424,6 +575,10 @@
               if (error.statusText && error.statusText.includes('Raw file format json not allowed')) {
                 console.error('Your Cloudinary upload preset does not allow JSON files. Please update your preset settings in the Cloudinary dashboard to enable "Raw" file uploads.');
                 alert('Error: Your Cloudinary preset does not allow JSON files. Please see the preset setup guide for instructions on fixing this.');
+              } else if (error.statusText && error.statusText.includes('not allowed')) {
+                alert(`Upload error: ${error.statusText}. Please check your Cloudinary preset settings and ensure "Resource type" is set to "Auto" and the file format is in the allowed formats list.`);
+              } else if (error.statusText && error.statusText.includes('exceeds maximum allowed')) {
+                alert(`File size error: ${error.statusText}. You can increase the limit in your Cloudinary upload preset settings.`);
               }
               return;
             }
@@ -436,10 +591,11 @@
               // Add the uploaded file to our media items array
               const newItem = {
                 type: result.info.resource_type === 'video' ? 'video' : 
-                      (result.info.format === 'json' || result.info.resource_type === 'raw') ? 'lottie' : 'image',
+                      (result.info.format === 'json') ? 'lottie' : 'image',
                 src: result.info.secure_url,
                 alt: result.info.original_filename,
-                class: result.info.format === 'json' ? 'lottie-container' : 'img-2col', // Default class
+                class: result.info.format === 'json' ? 'lottie-container' : 
+                      result.info.resource_type === 'video' ? 'video-4col' : 'img-2col', // Default class
                 public_id: result.info.public_id
               };
               mediaItems.push(newItem);
@@ -615,6 +771,7 @@
     
     // Function to add a project with Cloudinary media
     function addProject() {
+      // Get values from form fields
       const name = document.getElementById('name').value;
       const category = document.getElementById('category').value;
       const year = parseInt(document.getElementById('year').value);
@@ -626,7 +783,13 @@
       const team = document.getElementById('team').value;
       const role = document.getElementById('role').value;
       
-      // Create new project object with mediaItems array
+      // Validate required fields
+      if (!name) {
+        showStatus('projectsStatus', 'Project name is required', 'error');
+        return;
+      }
+      
+      // Create new project object
       const project = {
         id: nextId++,
         name,
@@ -641,57 +804,44 @@
         role,
         hidden: 0,
         media: [...mediaItems], // Use our media items array
-        order_position: 0 // Default order position
+        order_position: projects.length + 1 // Place at the end by default
       };
       
-      console.log('Adding project:', project);
-      
-      // Get existing projects
-      fetch('/js/projects.json')
-        .then(response => response.json())
-        .then(projects => {
-          // Add the new project
-          projects.push(project);
-          
-          // Save the updated projects
-          return fetch('/save-projects', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(projects)
-          });
-        })
-        .then(response => {
-          if (response.ok) {
-            alert('Project added successfully!');
-            // Clear the form
-            document.getElementById('name').value = '';
-            document.getElementById('category').value = '';
-            document.getElementById('year').value = '';
-            document.getElementById('icon').value = '';
-            document.getElementById('description').value = '';
-            document.getElementById('why').value = '';
-            document.getElementById('how').value = '';
-            document.getElementById('context').value = '';
-            document.getElementById('team').value = '';
-            document.getElementById('role').value = '';
-            // Clear the media items
-            mediaItems = [];
-            renderMediaPreviews();
-            // Refresh the project list
-            loadProjects();
-          } else {
-            throw new Error('Failed to save project');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Error adding project: ' + error.message);
-        });
+      try {
+        // Add the new project to the in-memory projects array
+        // (In serverless mode, all changes are kept in memory until exported)
+        projects.push(project);
+        
+        // Update the UI with the new project
+        renderProjects();
+        
+        // Show success message with instructions for saving
+        showStatus('projectsStatus', 'Project added successfully! Remember to download the JSON file when done.', 'success');
+        
+        // Clear the form
+        document.getElementById('name').value = '';
+        document.getElementById('category').value = '';
+        document.getElementById('year').value = '';
+        document.getElementById('icon').value = '';
+        document.getElementById('description').value = '';
+        document.getElementById('why').value = '';
+        document.getElementById('how').value = '';
+        document.getElementById('context').value = '';
+        document.getElementById('team').value = '';
+        document.getElementById('role').value = '';
+        
+        // Clear the media items
+        mediaItems = [];
+        renderMediaPreviews();
+      } catch (error) {
+        console.error('Error adding project:', error);
+        showStatus('projectsStatus', 'Error adding project: ' + error.message, 'error');
+      }
     }
     
-    // Attach event listener to the add project button
+    /**
+     * Attaches event listener to the add project button
+     */
     function attachAddProjectButton() {
       const addProjectButton = document.getElementById('addProjectBtn');
       if (addProjectButton) {
@@ -701,18 +851,16 @@
       }
     }
     
-    // Function to load and display projects
+    /**
+     * Loads projects from the local JSON file
+     * In serverless mode, this is the only data source
+     */
     function loadProjects() {
-      console.log('Attempting to load projects from js/projects.json');
-      
-      // Show loading state
       document.getElementById('error').innerText = 'Loading projects...';
       
       fetch('js/projects.json')
         .then(res => {
-          console.log('Fetch response status:', res.status, res.statusText);
           if (!res.ok) {
-            console.error(`Error loading projects: ${res.status} ${res.statusText}`);
             document.getElementById('error').innerText = `Error loading projects: ${res.status} ${res.statusText}`;
             return res.text().then(text => {
               try {
@@ -772,143 +920,118 @@
           console.error('Project loading error:', err);
         });
     }
-
-    // Render Projects
+    
+    /**
+     * Renders the list of projects in the admin interface
+     * This function updates the UI to reflect the current state of the projects array
+     */
     function renderProjects() {
       try {
-        console.log('Starting renderProjects function');
-      const list = document.getElementById('projectList');
+        const list = document.getElementById('projectList');
         if (!list) {
-          console.error('Could not find projectList element');
+          showStatus('error', 'Could not find projectList element', 'error');
           return;
         }
         
-      list.innerHTML = '';
-        console.log('Rendering', projects.length, 'projects');
-        
-        if (!Array.isArray(projects) || projects.length === 0) {
-          console.warn('No projects to render or projects is not an array');
-          document.getElementById('error').innerText = 'No projects to display.';
+        // If no projects found, show a message
+        if (!projects || projects.length === 0) {
+          list.innerHTML = '<li class="no-projects">No projects found</li>';
+          document.getElementById('error').innerText = '';
           return;
         }
         
-        projects.forEach((p, index) => {
-          try {
-            if (!p || typeof p !== 'object') {
-              console.error('Invalid project data at index', index, p);
-              return;
-            }
-            
-        const li = document.createElement('li');
-            li.setAttribute('data-id', p.id || index); // Ensure this is numeric and unique
-        li.innerHTML = `
-          <div class="project-header">
-                <span>${p.name || 'Unnamed'} (${p.year || 'No Year'})</span>
-            <div class="project-actions">
-                  <button onclick="toggleHide(${p.id || index}, ${p.hidden || 0})">${p.hidden ? 'Show' : 'Hide'}</button>
-                  <button onclick="showEditForm(${p.id || index})">Edit</button>
-                  <button class="delete-btn" onclick="deleteProject(${p.id || index})">Delete</button>
-            </div>
-          </div>
-              <div id="editForm_${p.id || index}" class="edit-form">
-                <h3>Edit ${p.name || 'Unnamed'}</h3>
-                <label>Name:</label><input type="text" id="edit_name_${p.id || index}" value="${p.name || ''}">
-                <label>Category:</label><input type="text" id="edit_category_${p.id || index}" value="${p.category || ''}">
-                <label>Year:</label><input type="number" id="edit_year_${p.id || index}" value="${p.year || ''}">
-                <label>Icon URL:</label><input type="text" id="edit_icon_${p.id || index}" value="${p.icon || ''}">
-                <label>Description:</label><textarea id="edit_description_${p.id || index}">${p.description || ''}</textarea>
-                <label>Why:</label><textarea id="edit_why_${p.id || index}">${p.why || ''}</textarea>
-                <label>How:</label><textarea id="edit_how_${p.id || index}">${p.how || ''}</textarea>
-                <label>Context:</label><textarea id="edit_context_${p.id || index}">${p.context || ''}</textarea>
-                <label>Team:</label><textarea id="edit_team_${p.id || index}">${p.team || ''}</textarea>
-                <label>Role:</label><textarea id="edit_role_${p.id || index}">${p.role || ''}</textarea>
-                <label>Media:</label>
-                <div id="mediaUploadSection_${p.id || index}" class="media-upload-section">
-                  <button type="button" id="uploadMediaBtn_${p.id || index}" class="upload-btn" onclick="openUploadWidget(${p.id || index})">Upload Media</button>
-                  <p class="media-help">Supported formats: jpg, png, gif, mp4, json (for Lottie)</p>
-                  <p class="media-help"><strong>JSON files</strong>: JSON files for Lottie animations will be automatically uploaded as "raw" files to Cloudinary and properly configured in your portfolio.</p>
-                  <div id="mediaPreviewContainer_${p.id || index}" class="media-preview-container"></div>
-                  <textarea id="edit_media_${p.id || index}" style="display:none;">${JSON.stringify(p.media || [], null, 2)}</textarea>
-                </div>
-                <button onclick="updateProject(${p.id || index})">Save</button>
-                <button onclick="hideEditForm(${p.id || index})">Cancel</button>
-          </div>
-        `;
-        list.appendChild(li);
-          } catch (err) {
-            console.error('Error rendering project at index', index, err);
-          }
+        // Clear previous error messages
+        document.getElementById('error').innerText = '';
+        
+        // Sort projects by order position
+        const sortedProjects = [...projects].sort((a, b) => {
+          return (a.order_position || 0) - (b.order_position || 0);
         });
-
-        console.log('Projects rendered successfully');
-
-        // After adding all project forms, load media previews for each
-        projects.forEach((p, index) => {
-          try {
-            loadProjectMedia(p.id || index, p.media || []);
-          } catch (err) {
-            console.error('Error loading media for project', p.id || index, err);
-          }
-      });
-
-        // Initialize Sortable with debugging and dataIdAttr
-        try {
-      new Sortable(list, {
-        animation: 150,
-        ghostClass: 'sortable-ghost',
-        dataIdAttr: 'data-id', // Explicitly specify the attribute for IDs
-        onStart: function (evt) {
-          console.log('Drag started, item ID:', evt.item.getAttribute('data-id'));
-        },
-        onEnd: function (evt) {
-          const currentOrder = projects.map(p => p.id);
-              const currentOrderNames = currentOrder.map(id => projects.find(p => p.id === id)?.name || 'Unknown');
-          console.log('Order before change (IDs):', currentOrder);
-          console.log('Order before change (Names):', currentOrderNames);
-
-          const newOrder = Array.from(list.children).map(li => {
-            const id = parseInt(li.getAttribute('data-id'), 10); // Ensure numeric parsing
-            console.log('Item in new order, ID:', id, 'Position:', Array.from(list.children).indexOf(li), 'Name:', projects.find(p => p.id === id)?.name || 'Unknown');
-            return id;
-          });
-
-          // Validate newOrder for uniqueness and correctness
-          const uniqueIds = new Set(newOrder);
-          if (uniqueIds.size !== newOrder.length) {
-            console.error('Duplicate IDs detected in newOrder:', newOrder);
-            return; // Prevent updating if invalid
-          }
-          console.log('New order before sending (IDs):', newOrder);
-          const newOrderNames = newOrder.map(id => projects.find(p => p.id === id)?.name || 'Unknown');
-          console.log('New order before sending (Names):', newOrderNames);
-          updateProjectOrder(newOrder);
-        }
-      });
-        } catch (err) {
-          console.error('Error initializing Sortable:', err);
-        }
-
-        // Initialize sortable for each media preview container
-        projects.forEach((p, index) => {
-          try {
-            const mediaContainer = document.getElementById(`mediaPreviewContainer_${p.id || index}`);
-            if (mediaContainer) {
-              new Sortable(mediaContainer, {
-                animation: 150,
-                ghostClass: 'sortable-ghost',
-                onEnd: function() {
-                  // Update media order based on the new DOM order
-                  updateMediaOrder(p.id || index);
-                }
-              });
+        
+        // Generate HTML for each project
+        list.innerHTML = sortedProjects.map((p, index) => {
+          // Handle media preview
+          let mediaPreview = '<div class="media-preview-small">';
+          if (p.media && p.media.length > 0) {
+            // Find the first image to use as preview
+            const firstImage = p.media.find(m => m.type === 'image');
+            if (firstImage) {
+              mediaPreview += `<img src="${firstImage.src}" alt="Media preview">`;
+            } else {
+              // If no image found, show first item type
+              mediaPreview += `<div class="media-type">${p.media[0].type}</div>`;
             }
-          } catch (err) {
-            console.error('Error initializing media sortable for project', p.id || index, err);
+            mediaPreview += `<div class="media-count">${p.media.length} items</div>`;
+          } else {
+            mediaPreview += '<div class="no-media">No media</div>';
+          }
+          mediaPreview += '</div>';
+          
+          return `
+            <li class="project-item" data-id="${p.id || index}">
+              <div class="project-header">
+                <h3>${p.name || 'Unnamed Project'}</h3>
+                <div class="project-controls">
+                  <button class="handle" title="Drag to reorder">≡</button>
+                  <button class="edit-btn" onclick="showEditForm(${p.id || index})">Edit</button>
+                  <button class="delete-btn" onclick="deleteProject(${p.id || index})">Delete</button>
+                </div>
+              </div>
+              <div class="project-details">
+                <div class="project-info">
+                  <p><strong>Category:</strong> ${p.category || 'None'}</p>
+                  <p><strong>Year:</strong> ${p.year || 'Unknown'}</p>
+                  <p><strong>Hidden:</strong> ${p.hidden ? 'Yes' : 'No'}</p>
+                  <p><strong>Order:</strong> ${p.order_position || 'Unset'}</p>
+                </div>
+                <div class="project-preview">
+                  <div class="icon-preview-small">
+                    <img src="${p.icon || '/img/prod/placeholder.jpg'}" alt="Icon preview">
+                  </div>
+                  ${mediaPreview}
+                </div>
+              </div>
+              
+              <!-- Edit Form Placeholder -->
+              <div id="editForm_${p.id || index}" class="edit-form" style="display: none;"></div>
+            </li>
+          `;
+        }).join('');
+        
+        // Initialize sorting functionality
+        initSortable();
+      } catch (err) {
+        showStatus('error', `Error rendering projects: ${err.message}`, 'error');
+      }
+    }
+    
+    /**
+     * Initializes the drag-and-drop sorting functionality
+     * This allows users to reorder projects by dragging them
+     */
+    function initSortable() {
+      try {
+        const list = document.getElementById('projectList');
+        if (!list) return;
+        
+        new Sortable(list, {
+          animation: 150,
+          handle: '.handle',
+          ghostClass: 'sortable-ghost',
+          onEnd: function(evt) {
+            const newOrder = Array.from(list.children).map(li => {
+              return parseInt(li.getAttribute('data-id'), 10);
+            });
+            
+            // Filter out any NaN values
+            const validOrder = newOrder.filter(id => !isNaN(id));
+            
+            // Update the project order
+            updateProjectOrder(validOrder);
           }
         });
       } catch (err) {
-        console.error('Error in renderProjects:', err);
-        document.getElementById('error').innerText = `Error rendering projects: ${err.message}`;
+        showStatus('error', `Error initializing sortable: ${err.message}`, 'error');
       }
     }
     
@@ -1097,29 +1220,41 @@
       }
     }
 
-    // Delete Project
+    /**
+     * Deletes a project from the projects array
+     * @param {number} id - ID of the project to delete
+     */
     function deleteProject(id) {
-      if (!confirm(`Are you sure you want to delete this project?`)) return;
-      
-      const projectIndex = projects.findIndex(p => p.id === id);
-      if (projectIndex === -1) {
-        showStatus('error', `Project ID ${id} not found`, 'error');
+      if (!confirm(`Are you sure you want to delete this project?`)) {
         return;
       }
       
-      const projectName = projects[projectIndex].name;
-      projects.splice(projectIndex, 1);
-      
-      // Update order positions
-      projects.forEach((p, idx) => {
-        p.order_position = idx + 1;
-      });
-      
-      showStatus('projectsStatus', `Project "${projectName}" deleted successfully. Don't forget to download the JSON file.`, 'success');
-      renderProjects();
+      try {
+        const projectIndex = projects.findIndex(p => p.id === id);
+        if (projectIndex === -1) {
+          showStatus('projectsStatus', `Error: Project ID ${id} not found`, 'error');
+          return;
+        }
+        
+        const projectName = projects[projectIndex].name;
+        projects.splice(projectIndex, 1);
+        
+        // Update order positions for remaining projects
+        projects.forEach((p, idx) => {
+          p.order_position = idx + 1;
+        });
+        
+        showStatus('projectsStatus', `Project "${projectName}" deleted. Remember to download the JSON file to save this change.`, 'success');
+        renderProjects();
+      } catch (error) {
+        showStatus('projectsStatus', `Error deleting project: ${error.message}`, 'error');
+      }
     }
 
-    // Update Project Order
+    /**
+     * Updates the order of projects based on drag-and-drop reordering
+     * @param {Array} newOrder - Array of project IDs in their new order
+     */
     function updateProjectOrder(newOrder) {
       // Update the order_position property of each project based on new order
       newOrder.forEach((id, index) => {
@@ -1132,16 +1267,15 @@
       // Sort the projects array by order_position
       projects.sort((a, b) => a.order_position - b.order_position);
       
-      showStatus('projectsStatus', "Project order updated successfully. Don't forget to download the JSON file.", 'success');
+      showStatus('projectsStatus', "Project order updated. Remember to download the updated JSON when finished.", 'success');
       renderProjects();
     }
 
     // Download Projects JSON
     function downloadProjectsJson() {
-      // Create a clean copy of projects without any unnecessary properties
-      const cleanProjects = projects.map(p => {
-        // Keep only the essential properties
-        return {
+      try {
+        // Create a clean copy of projects with only the essential properties
+        const cleanProjects = projects.map(p => ({
           name: p.name,
           category: p.category,
           year: p.year,
@@ -1154,31 +1288,32 @@
           role: p.role,
           hidden: p.hidden,
           media: p.media,
-          // Include these for compatibility but they can be removed if not needed
           id: p.id,
           order_position: p.order_position
-        };
-      });
-      
-      // Sort by order_position before download
-      cleanProjects.sort((a, b) => a.order_position - b.order_position);
-      
-      // Create a Blob with the JSON data
-      const blob = new Blob([JSON.stringify(cleanProjects, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      
-      // Create a link and trigger the download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'projects.json';
-      document.body.appendChild(a);
-      a.click();
-      
-      // Clean up
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      showStatus('projectsStatus', 'Projects JSON file downloaded. Please move it to your js/ directory.', 'success');
+        }));
+        
+        // Sort by order_position before download
+        cleanProjects.sort((a, b) => a.order_position - b.order_position);
+        
+        // Create a Blob with the JSON data
+        const blob = new Blob([JSON.stringify(cleanProjects, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        // Create a link and trigger the download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'projects.json';
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showStatus('projectsStatus', 'Projects JSON file downloaded. Place it in the js/ directory to update your site.', 'success');
+      } catch (error) {
+        showStatus('projectsStatus', `Error downloading JSON: ${error.message}`, 'error');
+      }
     }
 
     // Load Intro Text
@@ -1328,14 +1463,14 @@
 
         logDebug('Opening upload widget for project', { projectId, uploadPreset });
         
-        // Create project-specific widget (EXACT COPY FROM TEST PAGE)
+        // Create project-specific widget
         const projectWidget = cloudinary.createUploadWidget({
           cloudName: cloudName,
           uploadPreset: uploadPreset,
-          sources: ['local'],
+          sources: ['local', 'url', 'camera'],
           multiple: false,
-          resourceType: 'raw',
-          showAdvancedOptions: true,
+          resourceType: 'auto', // Use 'auto' to detect resource type automatically
+          showAdvancedOptions: false,
           styles: {
             palette: {
               window: "#FFFFFF",
@@ -1358,6 +1493,10 @@
             console.error('Upload widget error:', error);
             if (error.statusText && error.statusText.includes('Raw file format json not allowed')) {
               alert('Your Cloudinary upload preset does not allow JSON files. Please update your preset settings in the Cloudinary dashboard to enable "Raw" file uploads.');
+            } else if (error.statusText && error.statusText.includes('not allowed')) {
+              alert(`Upload error: ${error.statusText}. Please check your Cloudinary preset settings and ensure "Resource type" is set to "Auto" and the file format is in the allowed formats list.`);
+            } else if (error.statusText && error.statusText.includes('exceeds maximum allowed')) {
+              alert(`File size error: ${error.statusText}. You can increase the limit in your Cloudinary upload preset settings.`);
             }
             return;
           }
@@ -1380,7 +1519,7 @@
             let mediaType = 'image';
             if (result.info.resource_type === 'video') {
               mediaType = 'video';
-            } else if (result.info.format === 'json' || result.info.resource_type === 'raw') {
+            } else if (result.info.format === 'json') {
               mediaType = 'lottie';
             }
             
@@ -1486,6 +1625,9 @@ Alternatively, you can create a new preset called "portfolio_json" with these se
       
       // Initialize Cloudinary widget
       initializeCloudinaryWidget();
+      
+      // Setup icon preview functionality
+      setupIconPreview();
     });
     
     // Centralized initialization function
@@ -1513,6 +1655,325 @@ Alternatively, you can create a new preset called "portfolio_json" with these se
       console.log('Loading data...');
       loadProjects();
       loadIntroText();
+    }
+
+    // Icon Preview and Upload Functionality
+    function setupIconPreview() {
+      const iconInput = document.getElementById('icon');
+      const iconPreviewImg = document.getElementById('iconPreviewImg');
+      const iconPlaceholder = document.getElementById('iconPlaceholder');
+      const uploadIconBtn = document.getElementById('uploadIconBtn');
+      const clearIconBtn = document.getElementById('clearIconBtn');
+      
+      // Update preview when icon input changes
+      iconInput.addEventListener('input', updateIconPreview);
+      
+      // Initial preview
+      updateIconPreview();
+      
+      // Clear icon button
+      if (clearIconBtn) {
+        clearIconBtn.addEventListener('click', function() {
+          iconInput.value = '';
+          updateIconPreview();
+        });
+      }
+      
+      // Upload icon button
+      if (uploadIconBtn) {
+        uploadIconBtn.addEventListener('click', function() {
+          openIconUploadWidget();
+        });
+      }
+      
+      // Function to update icon preview
+      function updateIconPreview() {
+        const iconPath = iconInput.value.trim();
+        
+        if (iconPath) {
+          // Convert to Cloudinary URL if it's a local path
+          const iconUrl = getCloudinaryUrl(iconPath);
+          
+          // Show preview
+          iconPreviewImg.src = iconUrl;
+          iconPreviewImg.style.display = 'block';
+          iconPlaceholder.style.display = 'none';
+          
+          // Add error handling for the preview
+          iconPreviewImg.onerror = function() {
+            // If loading fails, show placeholder
+            iconPreviewImg.style.display = 'none';
+            iconPlaceholder.style.display = 'flex';
+            iconPlaceholder.textContent = 'Icon not found';
+          };
+        } else {
+          // No icon path, show placeholder
+          iconPreviewImg.style.display = 'none';
+          iconPlaceholder.style.display = 'flex';
+          iconPlaceholder.textContent = 'No icon selected';
+        }
+      }
+    }
+    
+    // Function to open the Cloudinary upload widget specifically for icons
+    function openIconUploadWidget() {
+      try {
+        if (typeof cloudinary === 'undefined') {
+          console.error('Cloudinary is not defined');
+          alert('Cloudinary widget not loaded. Please reload the page and try again.');
+          return;
+        }
+
+        logDebug('Opening upload widget for icon');
+        
+        // Create a standard Cloudinary widget for image uploads
+        const uploadWidget = cloudinary.createUploadWidget({
+          cloudName: cloudName,
+          uploadPreset: 'portfolio_upload',
+          sources: ['local'],
+          multiple: false,
+          folder: 'portfolio/icons',
+          resourceType: 'image' // Specifically use 'image' type for icons
+        }, (error, result) => {
+          console.log('Widget callback:', error, result);
+          
+          if (error) {
+            console.error('Widget upload error:', error);
+            alert(`Upload error: ${error.statusText || 'Unknown error'}`);
+            return;
+          }
+          
+          if (result && result.event === "success") {
+            console.log('Icon upload success:', result.info);
+            
+            // Set the icon URL in the input field
+            const iconInput = document.getElementById('icon');
+            if (iconInput) {
+              iconInput.value = result.info.secure_url;
+              
+              // Update the preview
+              const iconPreviewImg = document.getElementById('iconPreviewImg');
+              const iconPlaceholder = document.getElementById('iconPlaceholder');
+              
+              if (iconPreviewImg && iconPlaceholder) {
+                iconPreviewImg.src = result.info.secure_url;
+                iconPreviewImg.style.display = 'block';
+                iconPlaceholder.style.display = 'none';
+              }
+            }
+          }
+        });
+        
+        uploadWidget.open();
+      } catch (err) {
+        console.error('Error opening icon upload widget:', err);
+        alert(`Error: ${err.message}`);
+      }
+    }
+    
+    // Function to update the edit icon preview
+    function updateEditIconPreview(projectId) {
+      const iconInput = document.getElementById(`edit_icon_${projectId}`);
+      const iconPreviewImg = document.getElementById(`editIconPreviewImg_${projectId}`);
+      const iconPlaceholder = document.getElementById(`editIconPlaceholder_${projectId}`);
+      
+      if (!iconInput || !iconPreviewImg || !iconPlaceholder) {
+        console.error('Could not find icon elements for project', projectId);
+        return;
+      }
+      
+      const iconPath = iconInput.value.trim();
+      
+      if (iconPath) {
+        // Convert to Cloudinary URL if it's a local path
+        const iconUrl = getCloudinaryUrl(iconPath);
+        
+        // Show preview
+        iconPreviewImg.src = iconUrl;
+        iconPreviewImg.style.display = 'block';
+        iconPlaceholder.style.display = 'none';
+        
+        // Add error handling for the preview
+        iconPreviewImg.onerror = function() {
+          // If loading fails, show placeholder
+          iconPreviewImg.style.display = 'none';
+          iconPlaceholder.style.display = 'flex';
+          iconPlaceholder.textContent = 'Icon not found';
+        };
+      } else {
+        // No icon path, show placeholder
+        iconPreviewImg.style.display = 'none';
+        iconPlaceholder.style.display = 'flex';
+        iconPlaceholder.textContent = 'No icon selected';
+      }
+    }
+    
+    // Function to open the Cloudinary upload widget for editing a project's icon
+    function openIconUploadWidgetForEdit(projectId) {
+      try {
+        if (typeof cloudinary === 'undefined') {
+          console.error('Cloudinary is not defined');
+          alert('Cloudinary widget not loaded. Please reload the page and try again.');
+          return;
+        }
+
+        logDebug('Opening upload widget for editing icon of project', projectId);
+        
+        // Create a standard Cloudinary widget for image uploads
+        const uploadWidget = cloudinary.createUploadWidget({
+          cloudName: cloudName,
+          uploadPreset: 'portfolio_upload',
+          sources: ['local'],
+          multiple: false,
+          folder: 'portfolio/icons',
+          resourceType: 'image' // Specifically use 'image' type for icons
+        }, (error, result) => {
+          console.log('Widget callback for project', projectId, ':', error, result);
+          
+          if (error) {
+            console.error('Widget upload error:', error);
+            alert(`Upload error: ${error.statusText || 'Unknown error'}`);
+            return;
+          }
+          
+          if (result && result.event === "success") {
+            console.log('Icon upload success for project', projectId, ':', result.info);
+            
+            // Set the icon URL in the input field
+            const iconInput = document.getElementById(`edit_icon_${projectId}`);
+            if (iconInput) {
+              iconInput.value = result.info.secure_url;
+              
+              // Update the preview
+              updateEditIconPreview(projectId);
+            }
+          }
+        });
+        
+        uploadWidget.open();
+      } catch (err) {
+        console.error('Error opening icon upload widget:', err);
+        alert(`Error: ${err.message}`);
+      }
+    }
+    
+    // Function to clear an icon in edit mode
+    function clearEditIcon(projectId) {
+      const iconInput = document.getElementById(`edit_icon_${projectId}`);
+      if (iconInput) {
+        iconInput.value = '';
+        updateEditIconPreview(projectId);
+      }
+    }
+
+    // Updated function to check Cloudinary preset with more detailed feedback
+    async function checkCloudinaryPreset() {
+      try {
+        const status = document.getElementById('cloudinaryPresetStatus');
+        status.style.display = 'block';
+        status.innerHTML = 'Checking Cloudinary settings...';
+        status.className = 'status status-testing';
+        
+        // Create a test PNG
+        const canvas = document.createElement('canvas');
+        canvas.width = 100;
+        canvas.height = 100;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(0, 0, 100, 100);
+        
+        // Convert canvas to blob and then to file
+        const pngBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        const testPngFile = new File([pngBlob], 'test-square.png', { type: 'image/png' });
+        
+        // Now test PNG upload
+        const pngResult = await testFileUpload(testPngFile, 'PNG');
+        
+        // Report results
+        let html = `
+          <h4>Cloudinary Upload Settings Test Results</h4>
+          <p><strong>Current preset:</strong> portfolio_upload</p>
+          <ul>
+            <li>PNG Upload: <strong>${pngResult.success ? '✅ Success' : '❌ Failed'}</strong>${pngResult.success ? '' : ` (${pngResult.error})`}</li>
+          </ul>
+        `;
+        
+        if (!pngResult.success) {
+          html += `
+            <h4>PNG Upload Failed - Next Steps:</h4>
+            <ol>
+              <li>Log in to your <a href="https://cloudinary.com/console" target="_blank">Cloudinary dashboard</a></li>
+              <li>Go to Settings → Upload → Upload Presets</li>
+              <li>Find the "portfolio_upload" preset and click "Edit"</li>
+              <li>Set "Resource type" to "Image"</li>
+              <li>Ensure "Allowed formats" includes PNG and JPG or is set to "All formats"</li>
+              <li>Save changes and try again</li>
+            </ol>
+          `;
+          status.className = 'status status-error';
+        } else {
+          html += `
+            <h4>Image Upload Successful!</h4>
+            <p>Your Cloudinary settings are correctly configured for image uploads.</p>
+            <h4>Recommended Settings:</h4>
+            <ul>
+              <li>Resource type: <strong>Image</strong></li>
+              <li>Allowed formats: <strong>PNG, JPG</strong></li>
+              <li>Max file size: <strong>At least 10MB for images</strong></li>
+            </ul>
+          `;
+          status.className = 'status status-success';
+        }
+        
+        status.innerHTML = html;
+      } catch (error) {
+        console.error('Error checking Cloudinary preset:', error);
+        const status = document.getElementById('cloudinaryPresetStatus');
+        if (status) {
+          status.innerHTML = `Error checking Cloudinary preset: ${error.message}`;
+          status.className = 'status status-error';
+        }
+      }
+    }
+
+    // Simplified helper function to test uploading a file
+    async function testFileUpload(file, formatName) {
+      console.log(`Testing ${formatName} upload for ${file.name} (${file.type})`);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'portfolio_upload');
+        formData.append('resource_type', 'image');
+        formData.append('tags', `test,${formatName.toLowerCase()}`);
+        
+        console.log(`Using image/upload endpoint`);
+        
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        console.log(`${formatName} test result:`, result);
+        
+        if (response.ok) {
+          console.log(`${formatName} test upload successful:`, result);
+          return { success: true, result };
+        } else {
+          console.error(`${formatName} test upload failed:`, result);
+          return { 
+            success: false, 
+            error: result.error?.message || 'Unknown error',
+            details: result
+          };
+        }
+      } catch (err) {
+        console.error(`Error testing ${formatName} upload:`, err);
+        return { 
+          success: false, 
+          error: err.message || 'Unknown error'
+        };
+      }
     }
   </script>
 </head>
@@ -1580,8 +2041,26 @@ Alternatively, you can create a new preset called "portfolio_json" with these se
       <input type="text" id="category" placeholder="Category">
       <label for="year">Year:</label>
       <input type="number" id="year" placeholder="Year">
-      <label for="icon">Icon URL:</label>
-      <input type="text" id="icon" placeholder="e.g., /img/icon_project.svg">
+      
+      <label for="icon">Project Icon:</label>
+      <div class="icon-upload-container">
+        <div class="icon-preview" id="iconPreview">
+          <img id="iconPreviewImg" src="/img/prod/placeholder.jpg" alt="Icon Preview" style="display: none;">
+          <div id="iconPlaceholder" class="icon-placeholder">No icon selected</div>
+        </div>
+        <div class="icon-input-group">
+          <input type="text" id="icon" placeholder="e.g., /img/icon_project.png">
+          <button type="button" id="uploadIconBtn" class="upload-btn">Upload Icon</button>
+          <button type="button" id="clearIconBtn" class="delete-btn">Clear</button>
+        </div>
+        <p class="media-help">PNG or JPG files recommended for icons. PNG provides better quality for logos and icons.</p>
+        <p class="media-help"><strong>Note:</strong> If you have issues uploading files, you may need to check your Cloudinary preset. Go to your Cloudinary dashboard, then Settings > Upload > Upload Presets and ensure the "portfolio_upload" preset allows PNG and JPG formats and has "Resource type" set to "Image".</p>
+        <div>
+          <button type="button" id="checkPngBtn" class="secondary-btn" onclick="checkCloudinaryPreset()">Check Cloudinary Settings</button>
+          <div id="cloudinaryPresetStatus" class="status" style="display: none;"></div>
+        </div>
+      </div>
+      
       <label for="description">Description:</label>
       <textarea id="description" placeholder="Description"></textarea>
       <label for="why">Why:</label>
