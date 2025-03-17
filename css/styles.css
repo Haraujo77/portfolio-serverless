@@ -526,6 +526,11 @@ img {
     gap: var(--spacing-grid-gap);
   }
   
+  .lottie-container {
+    aspect-ratio: 1 / 1 !important; 
+  }
+
+
   /* Full-width items => span 2 columns */
   .para-1,
   .para-2,
@@ -536,6 +541,8 @@ img {
   .img-4col,
   .video-2col,
   .video-3col,
+  .lottie-container,
+  .lottie-container.match-1col, 
   .video-4col {
     grid-column: span 2 !important;
   }

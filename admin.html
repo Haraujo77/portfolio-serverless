@@ -136,85 +136,578 @@
     .download-btn:hover {
       background: #4cae4c;
     }
+    
+    /* Media upload styling */
+    .upload-btn {
+      background: #0056b3;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .upload-btn:hover {
+      background: #003d7e;
+    }
+    .media-help {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .media-preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+    .media-item {
+      position: relative;
+      width: 150px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+      padding: 5px;
+    }
+    .media-item img, .media-item video {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 2px;
+    }
+    .media-item .media-item-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .media-item .media-item-info {
+      padding: 5px;
+      font-size: 12px;
+    }
+    .media-remove-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 10px;
+      padding: 2px 5px;
+    }
+    .media-remove-btn:hover {
+      background: #c82333;
+    }
+    
+    /* Additional media editor styles */
+    .media-alt-input {
+      width: 100%;
+      margin-bottom: 5px;
+      font-size: 11px;
+      padding: 3px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+    }
+    .media-class-select {
+      width: 100%;
+      font-size: 11px;
+      padding: 3px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+    }
+    .media-item {
+      cursor: grab;
+    }
+    .media-item:active {
+      cursor: grabbing;
+    }
+    .media-item .media-item-overlay {
+      font-size: 11px;
+    }
+    .media-upload-section {
+      margin-bottom: 15px;
+    }
+    
+    /* Style for placeholder images */
+    .placeholder-image {
+      border: 2px dashed #ff5500;
+      background-color: #f8f8f8;
+    }
+    
+    /* Troubleshooting section styles */
+    .troubleshooting-section {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .troubleshooting-section h3 {
+      margin-top: 0;
+      color: #343a40;
+    }
+    
+    .troubleshooting-section .btn-group {
+      margin-top: 10px;
+    }
+    
+    .troubleshooting-section .btn {
+      margin-right: 5px;
+      margin-bottom: 5px;
+    }
+    
+    .help-text {
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 5px;
+    }
+    
+    .json-support-info {
+      background-color: #e2f3ff;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 15px;
+      font-size: 14px;
+    }
   </style>
-</head>
-<body>
-  <h1>Manage Projects</h1>
   
-  <div class="info-box">
-    <h3>Serverless Mode Information</h3>
-    <p>This is the admin panel running in serverless mode. Changes are made locally in your browser and will require you to download the updated JSON files and replace them in your project.</p>
-    <p>To save changes permanently:</p>
-    <ol>
-      <li>Make your changes in this interface</li>
-      <li>Click the "Download JSON" button</li>
-      <li>Replace the corresponding file in your js/ directory</li>
-    </ol>
-  </div>
-
-  <!-- Intro Text Management Section -->
-  <div class="form-container">
-    <h2>Edit Intro Text</h2>
-    <label for="introPara1">Intro Paragraph 1:</label>
-    <textarea id="introPara1" rows="5" placeholder="First paragraph of the intro section"></textarea>
-    <label for="introPara2">Intro Paragraph 2:</label>
-    <textarea id="introPara2" rows="5" placeholder="Second paragraph of the intro section"></textarea>
-    <label for="linkedinUrl">LinkedIn URL:</label>
-    <input type="text" id="linkedinUrl" placeholder="Your LinkedIn profile URL">
-    <button onclick="saveIntroText()">Save Intro Text</button>
-    <button class="download-btn" onclick="downloadIntroJson()">Download Intro JSON</button>
-    <div id="introStatus" class="status"></div>
-  </div>
-
-  <!-- Add Project Form -->
-  <div class="form-container">
-    <h2>Add New Project</h2>
-    <label for="name">Name:</label>
-    <input type="text" id="name" placeholder="Project Name">
-    <label for="category">Category:</label>
-    <input type="text" id="category" placeholder="Category">
-    <label for="year">Year:</label>
-    <input type="number" id="year" placeholder="Year">
-    <label for="icon">Icon URL:</label>
-    <input type="text" id="icon" placeholder="e.g., /img/icon_project.svg">
-    <label for="description">Description:</label>
-    <textarea id="description" placeholder="Description"></textarea>
-    <label for="why">Why:</label>
-    <textarea id="why" placeholder="Why"></textarea>
-    <label for="how">How:</label>
-    <textarea id="how" placeholder="How"></textarea>
-    <label for="context">Context:</label>
-    <textarea id="context" placeholder="Context"></textarea>
-    <label for="team">Team:</label>
-    <textarea id="team" placeholder="Team"></textarea>
-    <label for="role">My Role:</label>
-    <textarea id="role" placeholder="My Role"></textarea>
-    <label for="media">Media (JSON):</label>
-    <textarea id="media" placeholder='e.g., [{"type": "image", "src": "/img/cover.png", "alt": "Cover", "class": "first-image"}]'></textarea>
-    <button onclick="addProject()">Add Project</button>
-  </div>
-  
-  <!-- Project Management Tools -->
-  <div class="form-container">
-    <h2>Project Management</h2>
-    <button class="download-btn" onclick="downloadProjectsJson()">Download Projects JSON</button>
-    <div id="projectsStatus" class="status"></div>
-  </div>
-
-  <!-- Project List -->
-  <ul id="projectList" class="sortable"></ul>
-  <div id="error"></div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  <!-- Cloudinary SDK -->
+  <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
   <script>
+    // Cloudinary configuration
+    const cloudName = 'dicwtd4pv'; 
+    const uploadPreset = 'portfolio_upload'; // Changed back to the working preset from test page
+    const placeholderUrl = 'https://res.cloudinary.com/dicwtd4pv/image/upload/v1742144110/portfolio/placeholder_pkmwq9.jpg';
+    
     // Global variables
     let projects = [];
     let introData = {};
     let nextId = 1; // For new projects in serverless mode
+    let mediaItems = []; // To track uploaded media
     
-    // Load Projects
+    // Helper function to handle image loading errors
+    function setupImageErrorHandling() {
+      // Use event delegation for efficiency
+      document.addEventListener('error', function(e) {
+        const target = e.target;
+        // Only handle errors for images and videos
+        if (target.tagName === 'IMG' || target.tagName === 'VIDEO') {
+          console.warn('Media failed to load, replacing with placeholder:', target.src);
+          if (target.src.includes('cloudinary.com')) {
+            // Replace with placeholder
+            target.src = placeholderUrl;
+            // Add class to show it's a placeholder
+            target.classList.add('placeholder-image');
+          }
+        }
+      }, true); // Use capture phase to get all errors
+      
+      console.log('Image error handling set up with placeholder:', placeholderUrl);
+    }
+    
+    // New function to optimize Cloudinary URLs for faster loading
+    function optimizeCloudinaryUrl(url) {
+      if (!url || !url.includes('cloudinary.com')) return url;
+      
+      // Add performance optimization parameters
+      // f_auto: automatically choose the best format
+      // q_auto: automatically optimize quality
+      // dpr_auto: automatically adjust for device pixel ratio
+      // Avoid transformations for large files to prevent processing delay
+      if (url.includes('/image/')) {
+        return url.replace('/upload/', '/upload/f_auto,q_auto,dpr_auto,c_limit/');
+      } else if (url.includes('/video/')) {
+        return url; // Don't apply transformations to videos as they can cause slow loading
+      } else if (url.includes('/raw/')) {
+        return url; // Don't apply transformations to raw files
+      }
+      return url;
+    }
+    
+    // Update getCloudinaryUrl to use optimization
+    function getCloudinaryUrl(path) {
+      // If already a Cloudinary URL or external URL, return optimized version
+      if (path.includes('cloudinary.com')) {
+        return optimizeCloudinaryUrl(path);
+      }
+      if (path.startsWith('http')) {
+        return path;
+      }
+      
+      // Convert local path to Cloudinary URL
+      if (path.startsWith('/img/')) {
+        // Extract filename from path
+        const filename = path.split('/').pop();
+        // Use folder structure from local path
+        const folderPath = path.replace('/img/', '').split('/').slice(0, -1).join('/');
+        
+        // Determine resource type based on extension
+        let resourceType = 'image';
+        const ext = filename.split('.').pop().toLowerCase();
+        if (['mp4', 'mov', 'webm'].includes(ext)) {
+          resourceType = 'video';
+        } else if (ext === 'json') {
+          // Special handling for JSON files (like Lottie animations)
+          // JSON files should be uploaded to Cloudinary as "raw" files
+          return `https://res.cloudinary.com/${cloudName}/raw/upload/v1/portfolio/${folderPath}/${filename}`;
+        }
+        
+        let url = `https://res.cloudinary.com/${cloudName}/${resourceType}/upload/v1/portfolio/${folderPath}/${filename}`;
+        
+        // Apply optimization only for images
+        if (resourceType === 'image') {
+          url = url.replace('/upload/', '/upload/f_auto,q_auto,dpr_auto,c_limit/');
+        }
+        
+        return url;
+      }
+      
+      // If not in the expected format, return as is
+      return path;
+    }
+    
+    // Debug logger for Cloudinary operations
+    function logDebug(message, data) {
+      console.log(`[Cloudinary] ${message}`);
+      if (data) {
+        if (typeof data === 'object') {
+          console.log(JSON.stringify(data, null, 2));
+        } else {
+          console.log(data);
+        }
+      }
+    }
+    
+    // Setup the upload widget
+    let myWidget;
+    function initializeWidget() {
+      // Check if the cloudinary widget script is loaded
+      if (typeof cloudinary !== 'undefined') {
+        try {
+          logDebug('Creating Cloudinary upload widget...');
+          logDebug('Configuration:', { cloudName, uploadPreset });
+          
+          // EXACT SAME CODE AS TEST PAGE
+          myWidget = cloudinary.createUploadWidget({
+            cloudName: cloudName,
+            uploadPreset: uploadPreset,
+            sources: ['local'],
+            multiple: false,
+            resourceType: 'raw',
+            showAdvancedOptions: true,
+            styles: {
+              palette: {
+                window: "#FFFFFF",
+                sourceBg: "#F4F4F5",
+                windowBorder: "#90A0B3",
+                tabIcon: "#0094C7",
+                inactiveTabIcon: "#69778A",
+                menuIcons: "#0094C7",
+                link: "#0094C7",
+                action: "#7367F0",
+                inProgress: "#0194c7",
+                complete: "#53ad9d",
+                error: "#EA2727",
+                textDark: "#000000",
+                textLight: "#FFFFFF"
+              }
+            }
+          }, (error, result) => {
+            if (error) {
+              console.error('Upload widget initialization error:', error);
+              if (error.statusText && error.statusText.includes('Raw file format json not allowed')) {
+                console.error('Your Cloudinary upload preset does not allow JSON files. Please update your preset settings in the Cloudinary dashboard to enable "Raw" file uploads.');
+                alert('Error: Your Cloudinary preset does not allow JSON files. Please see the preset setup guide for instructions on fixing this.');
+              }
+              return;
+            }
+            
+            logDebug('Widget event', result);
+            
+            if (!error && result && result.event === "success") {
+              console.log('Upload successful', result.info);
+              
+              // Add the uploaded file to our media items array
+              const newItem = {
+                type: result.info.resource_type === 'video' ? 'video' : 
+                      (result.info.format === 'json' || result.info.resource_type === 'raw') ? 'lottie' : 'image',
+                src: result.info.secure_url,
+                alt: result.info.original_filename,
+                class: result.info.format === 'json' ? 'lottie-container' : 'img-2col', // Default class
+                public_id: result.info.public_id
+              };
+              mediaItems.push(newItem);
+              renderMediaPreviews();
+            }
+          });
+          
+          console.log('Widget created successfully');
+        } catch (e) {
+          console.error('Error creating widget:', e);
+        }
+      } else {
+        console.error('Cloudinary is not defined. Make sure the Cloudinary script is loaded properly.');
+      }
+    }
+    
+    // Attach the upload widget to the button
+    function attachUploadButton() {
+      const uploadButton = document.getElementById('uploadMediaBtn');
+      if (uploadButton) {
+        uploadButton.addEventListener("click", function() {
+          if (myWidget) {
+            myWidget.open();
+          } else {
+            // Try to initialize the widget if it doesn't exist
+            initializeWidget();
+            setTimeout(() => {
+              if (myWidget) {
+                myWidget.open();
+              } else {
+                console.error('Upload widget not initialized');
+                alert('Upload widget not initialized. Please reload the page.');
+              }
+            }, 500);
+          }
+        }, false);
+      }
+    }
+    
+    // Function to render media previews
+    function renderMediaPreviews() {
+      const container = document.getElementById('mediaPreviewContainer');
+      container.innerHTML = '';
+      
+      mediaItems.forEach((item, index) => {
+        const mediaItem = document.createElement('div');
+        mediaItem.className = 'media-item';
+        mediaItem.setAttribute('draggable', 'true');
+        mediaItem.dataset.index = index;
+        
+        // Media preview (image or video)
+        if (item.type === 'image') {
+          const img = document.createElement('img');
+          img.src = item.src;
+          img.alt = item.alt;
+          mediaItem.appendChild(img);
+        } else if (item.type === 'video') {
+          const video = document.createElement('video');
+          video.src = item.src;
+          video.controls = true;
+          video.muted = true;
+          video.style.width = '100%';
+          mediaItem.appendChild(video);
+        }
+        
+        // Remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.innerHTML = '×';
+        removeBtn.addEventListener('click', () => {
+          mediaItems.splice(index, 1);
+          renderMediaPreviews();
+        });
+        mediaItem.appendChild(removeBtn);
+        
+        // Media details form
+        const details = document.createElement('div');
+        details.className = 'media-details';
+        
+        // Alt text input
+        const altInput = document.createElement('input');
+        altInput.type = 'text';
+        altInput.placeholder = 'Alt text';
+        altInput.value = item.alt;
+        altInput.addEventListener('change', (e) => {
+          item.alt = e.target.value;
+        });
+        details.appendChild(altInput);
+        
+        // CSS class selector
+        const classSelect = document.createElement('select');
+        classSelect.innerHTML = `
+          <option value="first-image" ${item.class === 'first-image' ? 'selected' : ''}>First Image</option>
+          <option value="img-4col" ${item.class === 'img-4col' ? 'selected' : ''}>4 Columns</option>
+          <option value="img-3col" ${item.class === 'img-3col' ? 'selected' : ''}>3 Columns</option>
+          <option value="img-2col" ${item.class === 'img-2col' ? 'selected' : ''}>2 Columns</option>
+          <option value="img-1col" ${item.class === 'img-1col' ? 'selected' : ''}>1 Column</option>
+          <option value="img-2col match-1col" ${item.class === 'img-2col match-1col' ? 'selected' : ''}>2 Col Match</option>
+          <option value="img-3col match-1col" ${item.class === 'img-3col match-1col' ? 'selected' : ''}>3 Col Match</option>
+          <option value="video-4col" ${item.class === 'video-4col' ? 'selected' : ''}>Video 4 Columns</option>
+          <option value="video-3col" ${item.class === 'video-3col' ? 'selected' : ''}>Video 3 Columns</option>
+          <option value="video-2col" ${item.class === 'video-2col' ? 'selected' : ''}>Video 2 Columns</option>
+          <option value="video-1col" ${item.class === 'video-1col' ? 'selected' : ''}>Video 1 Column</option>
+        `;
+        classSelect.addEventListener('change', (e) => {
+          item.class = e.target.value;
+        });
+        details.appendChild(classSelect);
+        
+        mediaItem.appendChild(details);
+        container.appendChild(mediaItem);
+        
+        // Add drag-and-drop functionality
+        mediaItem.addEventListener('dragstart', handleDragStart);
+        mediaItem.addEventListener('dragover', handleDragOver);
+        mediaItem.addEventListener('dragenter', handleDragEnter);
+        mediaItem.addEventListener('dragleave', handleDragLeave);
+        mediaItem.addEventListener('drop', handleDrop);
+        mediaItem.addEventListener('dragend', handleDragEnd);
+      });
+    }
+    
+    // Drag and drop functionality for reordering media items
+    let dragSrcEl = null;
+    
+    function handleDragStart(e) {
+      dragSrcEl = this;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', this.dataset.index);
+      this.style.opacity = '0.4';
+    }
+    
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      return false;
+    }
+    
+    function handleDragEnter(e) {
+      this.classList.add('drag-over');
+    }
+    
+    function handleDragLeave(e) {
+      this.classList.remove('drag-over');
+    }
+    
+    function handleDrop(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      
+      if (dragSrcEl !== this) {
+        const fromIndex = parseInt(dragSrcEl.dataset.index);
+        const toIndex = parseInt(this.dataset.index);
+        
+        // Reorder the array
+        const item = mediaItems[fromIndex];
+        mediaItems.splice(fromIndex, 1);
+        mediaItems.splice(toIndex, 0, item);
+        
+        // Re-render the list
+        renderMediaPreviews();
+      }
+      
+      return false;
+    }
+    
+    function handleDragEnd(e) {
+      this.style.opacity = '1';
+      document.querySelectorAll('.media-item').forEach(item => {
+        item.classList.remove('drag-over');
+      });
+    }
+    
+    // Function to add a project with Cloudinary media
+    function addProject() {
+      const name = document.getElementById('name').value;
+      const category = document.getElementById('category').value;
+      const year = parseInt(document.getElementById('year').value);
+      const icon = document.getElementById('icon').value;
+      const description = document.getElementById('description').value;
+      const why = document.getElementById('why').value;
+      const how = document.getElementById('how').value;
+      const context = document.getElementById('context').value;
+      const team = document.getElementById('team').value;
+      const role = document.getElementById('role').value;
+      
+      // Create new project object with mediaItems array
+      const project = {
+        id: nextId++,
+        name,
+        category,
+        year,
+        icon: icon || '/img/prod/placeholder.jpg', // Default placeholder
+        description,
+        why,
+        how,
+        context,
+        team,
+        role,
+        hidden: 0,
+        media: [...mediaItems], // Use our media items array
+        order_position: 0 // Default order position
+      };
+      
+      console.log('Adding project:', project);
+      
+      // Get existing projects
+      fetch('/js/projects.json')
+        .then(response => response.json())
+        .then(projects => {
+          // Add the new project
+          projects.push(project);
+          
+          // Save the updated projects
+          return fetch('/save-projects', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(projects)
+          });
+        })
+        .then(response => {
+          if (response.ok) {
+            alert('Project added successfully!');
+            // Clear the form
+            document.getElementById('name').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('year').value = '';
+            document.getElementById('icon').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('why').value = '';
+            document.getElementById('how').value = '';
+            document.getElementById('context').value = '';
+            document.getElementById('team').value = '';
+            document.getElementById('role').value = '';
+            // Clear the media items
+            mediaItems = [];
+            renderMediaPreviews();
+            // Refresh the project list
+            loadProjects();
+          } else {
+            throw new Error('Failed to save project');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error adding project: ' + error.message);
+        });
+    }
+    
+    // Attach event listener to the add project button
+    function attachAddProjectButton() {
+      const addProjectButton = document.getElementById('addProjectBtn');
+      if (addProjectButton) {
+        addProjectButton.addEventListener('click', addProject);
+      } else {
+        console.warn('addProjectBtn element not found');
+      }
+    }
+    
+    // Function to load and display projects
     function loadProjects() {
       console.log('Attempting to load projects from js/projects.json');
+      
+      // Show loading state
+      document.getElementById('error').innerText = 'Loading projects...';
+      
       fetch('js/projects.json')
         .then(res => {
           console.log('Fetch response status:', res.status, res.statusText);
@@ -246,8 +739,10 @@
           if (data.length === 0) {
             console.warn('Projects array is empty');
             document.getElementById('error').innerText = 'No projects found. You can add new projects using the form above.';
+            return;
           }
           
+          console.log('Processing loaded projects data...');
           projects = data;
           
           // Add missing properties for compatibility
@@ -268,7 +763,9 @@
           
           // Sort by order_position
           projects.sort((a, b) => a.order_position - b.order_position);
+          console.log('Rendering projects, count:', projects.length);
           renderProjects();
+          document.getElementById('error').innerText = '';
         })
         .catch(err => {
           document.getElementById('error').innerText = `Error loading projects: ${err.message}`;
@@ -278,41 +775,84 @@
 
     // Render Projects
     function renderProjects() {
+      try {
+        console.log('Starting renderProjects function');
       const list = document.getElementById('projectList');
+        if (!list) {
+          console.error('Could not find projectList element');
+          return;
+        }
+        
       list.innerHTML = '';
-      projects.forEach(p => {
+        console.log('Rendering', projects.length, 'projects');
+        
+        if (!Array.isArray(projects) || projects.length === 0) {
+          console.warn('No projects to render or projects is not an array');
+          document.getElementById('error').innerText = 'No projects to display.';
+          return;
+        }
+        
+        projects.forEach((p, index) => {
+          try {
+            if (!p || typeof p !== 'object') {
+              console.error('Invalid project data at index', index, p);
+              return;
+            }
+            
         const li = document.createElement('li');
-        li.setAttribute('data-id', p.id); // Ensure this is numeric and unique
+            li.setAttribute('data-id', p.id || index); // Ensure this is numeric and unique
         li.innerHTML = `
           <div class="project-header">
-            <span>${p.name} (${p.year})</span>
+                <span>${p.name || 'Unnamed'} (${p.year || 'No Year'})</span>
             <div class="project-actions">
-              <button onclick="toggleHide(${p.id}, ${p.hidden})">${p.hidden ? 'Show' : 'Hide'}</button>
-              <button onclick="showEditForm(${p.id})">Edit</button>
-              <button class="delete-btn" onclick="deleteProject(${p.id})">Delete</button>
+                  <button onclick="toggleHide(${p.id || index}, ${p.hidden || 0})">${p.hidden ? 'Show' : 'Hide'}</button>
+                  <button onclick="showEditForm(${p.id || index})">Edit</button>
+                  <button class="delete-btn" onclick="deleteProject(${p.id || index})">Delete</button>
             </div>
           </div>
-          <div id="editForm_${p.id}" class="edit-form">
-            <h3>Edit ${p.name}</h3>
-            <label>Name:</label><input type="text" id="edit_name_${p.id}" value="${p.name}">
-            <label>Category:</label><input type="text" id="edit_category_${p.id}" value="${p.category}">
-            <label>Year:</label><input type="number" id="edit_year_${p.id}" value="${p.year}">
-            <label>Icon URL:</label><input type="text" id="edit_icon_${p.id}" value="${p.icon}">
-            <label>Description:</label><textarea id="edit_description_${p.id}">${p.description}</textarea>
-            <label>Why:</label><textarea id="edit_why_${p.id}">${p.why}</textarea>
-            <label>How:</label><textarea id="edit_how_${p.id}">${p.how}</textarea>
-            <label>Context:</label><textarea id="edit_context_${p.id}">${p.context}</textarea>
-            <label>Team:</label><textarea id="edit_team_${p.id}">${p.team}</textarea>
-            <label>Role:</label><textarea id="edit_role_${p.id}">${p.role}</textarea>
-            <label>Media (JSON):</label><textarea id="edit_media_${p.id}">${JSON.stringify(p.media, null, 2)}</textarea>
-            <button onclick="updateProject(${p.id})">Save</button>
-            <button onclick="hideEditForm(${p.id})">Cancel</button>
+              <div id="editForm_${p.id || index}" class="edit-form">
+                <h3>Edit ${p.name || 'Unnamed'}</h3>
+                <label>Name:</label><input type="text" id="edit_name_${p.id || index}" value="${p.name || ''}">
+                <label>Category:</label><input type="text" id="edit_category_${p.id || index}" value="${p.category || ''}">
+                <label>Year:</label><input type="number" id="edit_year_${p.id || index}" value="${p.year || ''}">
+                <label>Icon URL:</label><input type="text" id="edit_icon_${p.id || index}" value="${p.icon || ''}">
+                <label>Description:</label><textarea id="edit_description_${p.id || index}">${p.description || ''}</textarea>
+                <label>Why:</label><textarea id="edit_why_${p.id || index}">${p.why || ''}</textarea>
+                <label>How:</label><textarea id="edit_how_${p.id || index}">${p.how || ''}</textarea>
+                <label>Context:</label><textarea id="edit_context_${p.id || index}">${p.context || ''}</textarea>
+                <label>Team:</label><textarea id="edit_team_${p.id || index}">${p.team || ''}</textarea>
+                <label>Role:</label><textarea id="edit_role_${p.id || index}">${p.role || ''}</textarea>
+                <label>Media:</label>
+                <div id="mediaUploadSection_${p.id || index}" class="media-upload-section">
+                  <button type="button" id="uploadMediaBtn_${p.id || index}" class="upload-btn" onclick="openUploadWidget(${p.id || index})">Upload Media</button>
+                  <p class="media-help">Supported formats: jpg, png, gif, mp4, json (for Lottie)</p>
+                  <p class="media-help"><strong>JSON files</strong>: JSON files for Lottie animations will be automatically uploaded as "raw" files to Cloudinary and properly configured in your portfolio.</p>
+                  <div id="mediaPreviewContainer_${p.id || index}" class="media-preview-container"></div>
+                  <textarea id="edit_media_${p.id || index}" style="display:none;">${JSON.stringify(p.media || [], null, 2)}</textarea>
+                </div>
+                <button onclick="updateProject(${p.id || index})">Save</button>
+                <button onclick="hideEditForm(${p.id || index})">Cancel</button>
           </div>
         `;
         list.appendChild(li);
+          } catch (err) {
+            console.error('Error rendering project at index', index, err);
+          }
+        });
+
+        console.log('Projects rendered successfully');
+
+        // After adding all project forms, load media previews for each
+        projects.forEach((p, index) => {
+          try {
+            loadProjectMedia(p.id || index, p.media || []);
+          } catch (err) {
+            console.error('Error loading media for project', p.id || index, err);
+          }
       });
 
-      // Initialize Sortable with debugging and dataIdAttr
+        // Initialize Sortable with debugging and dataIdAttr
+        try {
       new Sortable(list, {
         animation: 150,
         ghostClass: 'sortable-ghost',
@@ -322,7 +862,7 @@
         },
         onEnd: function (evt) {
           const currentOrder = projects.map(p => p.id);
-          const currentOrderNames = currentOrder.map(id => projects.find(p => p.id === id).name);
+              const currentOrderNames = currentOrder.map(id => projects.find(p => p.id === id)?.name || 'Unknown');
           console.log('Order before change (IDs):', currentOrder);
           console.log('Order before change (Names):', currentOrderNames);
 
@@ -344,43 +884,159 @@
           updateProjectOrder(newOrder);
         }
       });
+        } catch (err) {
+          console.error('Error initializing Sortable:', err);
+        }
+
+        // Initialize sortable for each media preview container
+        projects.forEach((p, index) => {
+          try {
+            const mediaContainer = document.getElementById(`mediaPreviewContainer_${p.id || index}`);
+            if (mediaContainer) {
+              new Sortable(mediaContainer, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function() {
+                  // Update media order based on the new DOM order
+                  updateMediaOrder(p.id || index);
+                }
+              });
+            }
+          } catch (err) {
+            console.error('Error initializing media sortable for project', p.id || index, err);
+          }
+        });
+      } catch (err) {
+        console.error('Error in renderProjects:', err);
+        document.getElementById('error').innerText = `Error rendering projects: ${err.message}`;
+      }
     }
-
-    // Add Project
-    function addProject() {
-      const project = {
-        id: nextId++,
-        name: document.getElementById('name').value,
-        category: document.getElementById('category').value,
-        year: parseInt(document.getElementById('year').value),
-        icon: document.getElementById('icon').value,
-        description: document.getElementById('description').value,
-        why: document.getElementById('why').value,
-        how: document.getElementById('how').value,
-        context: document.getElementById('context').value,
-        team: document.getElementById('team').value,
-        role: document.getElementById('role').value,
-        hidden: 0,
-        order_position: projects.length + 1,
-        media: JSON.parse(document.getElementById('media').value || '[]')
-      };
-
-      projects.push(project);
-      showStatus('projectsStatus', `Project "${project.name}" added successfully. Don't forget to download the JSON file.`, 'success');
-      renderProjects();
+    
+    // Load and render media items for a specific project
+    function loadProjectMedia(projectId, mediaJson) {
+      const container = document.getElementById(`mediaPreviewContainer_${projectId}`);
+      if (!container) return;
       
-      // Clear form
-      document.getElementById('name').value = '';
-      document.getElementById('category').value = '';
-      document.getElementById('year').value = '';
-      document.getElementById('icon').value = '';
-      document.getElementById('description').value = '';
-      document.getElementById('why').value = '';
-      document.getElementById('how').value = '';
-      document.getElementById('context').value = '';
-      document.getElementById('team').value = '';
-      document.getElementById('role').value = '';
-      document.getElementById('media').value = '[]';
+      try {
+        const mediaItems = Array.isArray(mediaJson) ? mediaJson : [];
+        
+        container.innerHTML = '';
+        if (mediaItems.length === 0) return;
+        
+        // Preload images to speed up rendering
+        const imagesToPreload = mediaItems
+          .filter(item => item.type === 'image')
+          .map(item => getCloudinaryUrl(item.src));
+          
+        if (imagesToPreload.length > 0) {
+          imagesToPreload.forEach(imgSrc => {
+            const preloadLink = document.createElement('link');
+            preloadLink.rel = 'preload';
+            preloadLink.as = 'image';
+            preloadLink.href = imgSrc;
+            document.head.appendChild(preloadLink);
+          });
+        }
+        
+        mediaItems.forEach((item, index) => {
+          const mediaElement = document.createElement('div');
+          mediaElement.className = 'media-item';
+          mediaElement.setAttribute('data-index', index);
+          
+          // Convert local paths to Cloudinary URLs
+          const cloudinarySrc = getCloudinaryUrl(item.src);
+          
+          let previewContent = '';
+          if (item.type === 'image') {
+            previewContent = `<img src="${cloudinarySrc}" alt="${item.alt}" loading="eager">`;
+          } else if (item.type === 'video') {
+            previewContent = `<video src="${cloudinarySrc}" muted loop></video>`;
+          } else if (item.type === 'lottie') {
+            previewContent = `<div style="background: #f0f0f0; width: 100%; height: 80px; display: flex; align-items: center; justify-content: center;">Lottie</div>`;
+          }
+          
+          // Create a select for CSS class
+          const classOptions = [
+            'first-image', 'img-1col', 'img-2col', 'img-3col', 'img-4col',
+            'video-1col', 'video-2col', 'video-3col', 'video-4col',
+            'lottie-container'
+          ];
+          
+          const classSelect = classOptions.map(option => 
+            `<option value="${option}" ${item.class === option ? 'selected' : ''}>${option}</option>`
+          ).join('');
+          
+          mediaElement.innerHTML = `
+            <div class="media-item-overlay">
+              <span>${item.type}</span>
+              <button class="media-remove-btn" onclick="removeProjectMedia(${projectId}, ${index})">×</button>
+            </div>
+            ${previewContent}
+            <div class="media-item-info">
+              <input type="text" placeholder="Alt text" value="${item.alt}" 
+                onchange="updateMediaProperty(${projectId}, ${index}, 'alt', this.value)" 
+                class="media-alt-input">
+              <select onchange="updateMediaProperty(${projectId}, ${index}, 'class', this.value)" 
+                class="media-class-select">
+                ${classSelect}
+              </select>
+            </div>
+          `;
+          
+          container.appendChild(mediaElement);
+        });
+      } catch (e) {
+        console.error('Error loading project media:', e);
+      }
+    }
+    
+    // Remove a media item from a project
+    function removeProjectMedia(projectId, index) {
+      try {
+        let projectMedia = JSON.parse(document.getElementById(`edit_media_${projectId}`).value || '[]');
+        if (index >= 0 && index < projectMedia.length) {
+          projectMedia.splice(index, 1);
+          document.getElementById(`edit_media_${projectId}`).value = JSON.stringify(projectMedia, null, 2);
+          loadProjectMedia(projectId, projectMedia);
+        }
+      } catch (e) {
+        console.error('Error removing project media:', e);
+      }
+    }
+    
+    // Update a property of a media item
+    function updateMediaProperty(projectId, index, property, value) {
+      try {
+        let projectMedia = JSON.parse(document.getElementById(`edit_media_${projectId}`).value || '[]');
+        if (index >= 0 && index < projectMedia.length) {
+          projectMedia[index][property] = value;
+          document.getElementById(`edit_media_${projectId}`).value = JSON.stringify(projectMedia, null, 2);
+        }
+      } catch (e) {
+        console.error('Error updating media property:', e);
+      }
+    }
+    
+    // Update the order of media items based on their position in the DOM
+    function updateMediaOrder(projectId) {
+      const container = document.getElementById(`mediaPreviewContainer_${projectId}`);
+      if (!container) return;
+      
+      try {
+        let projectMedia = JSON.parse(document.getElementById(`edit_media_${projectId}`).value || '[]');
+        const mediaItems = Array.from(container.children);
+        
+        // Create a new array in the order of the DOM elements
+        const newMediaOrder = mediaItems.map(item => {
+          const index = parseInt(item.getAttribute('data-index'), 10);
+          return projectMedia[index];
+        });
+        
+        document.getElementById(`edit_media_${projectId}`).value = JSON.stringify(newMediaOrder, null, 2);
+        loadProjectMedia(projectId, newMediaOrder);
+      } catch (e) {
+        console.error('Error updating media order:', e);
+      }
     }
 
     // Toggle Hide
@@ -661,11 +1317,306 @@
       }
     }
 
-    // Load data when page loads
-    document.addEventListener('DOMContentLoaded', () => {
+    // Open the upload widget for a specific project
+    function openUploadWidget(projectId) {
+      try {
+        if (typeof cloudinary === 'undefined') {
+          console.error('Cloudinary is not defined');
+          alert('Cloudinary widget not loaded. Please reload the page and try again.');
+          return;
+        }
+
+        logDebug('Opening upload widget for project', { projectId, uploadPreset });
+        
+        // Create project-specific widget (EXACT COPY FROM TEST PAGE)
+        const projectWidget = cloudinary.createUploadWidget({
+          cloudName: cloudName,
+          uploadPreset: uploadPreset,
+          sources: ['local'],
+          multiple: false,
+          resourceType: 'raw',
+          showAdvancedOptions: true,
+          styles: {
+            palette: {
+              window: "#FFFFFF",
+              sourceBg: "#F4F4F5",
+              windowBorder: "#90A0B3",
+              tabIcon: "#0094C7",
+              inactiveTabIcon: "#69778A",
+              menuIcons: "#0094C7",
+              link: "#0094C7",
+              action: "#7367F0",
+              inProgress: "#0194c7",
+              complete: "#53ad9d",
+              error: "#EA2727",
+              textDark: "#000000",
+              textLight: "#FFFFFF"
+            }
+          }
+        }, (error, result) => {
+          if (error) {
+            console.error('Upload widget error:', error);
+            if (error.statusText && error.statusText.includes('Raw file format json not allowed')) {
+              alert('Your Cloudinary upload preset does not allow JSON files. Please update your preset settings in the Cloudinary dashboard to enable "Raw" file uploads.');
+            }
+            return;
+          }
+          
+          logDebug('Widget event for project ' + projectId, result);
+          
+          if (result && result.event === "success") {
+            console.log('Upload success for project', projectId, ':', result.info);
+            
+            // Get current media array from the hidden textarea
+            let projectMedia = [];
+            try {
+              projectMedia = JSON.parse(document.getElementById(`edit_media_${projectId}`).value || '[]');
+            } catch (e) {
+              console.error('Error parsing media JSON:', e);
+              projectMedia = [];
+            }
+            
+            // Create media item based on file type
+            let mediaType = 'image';
+            if (result.info.resource_type === 'video') {
+              mediaType = 'video';
+            } else if (result.info.format === 'json' || result.info.resource_type === 'raw') {
+              mediaType = 'lottie';
+            }
+            
+            const newMediaItem = {
+              type: mediaType,
+              src: result.info.secure_url,
+              alt: result.info.original_filename || 'Media',
+              class: mediaType === 'image' ? 'first-image' : 
+                    (mediaType === 'video' ? 'video-4col' : 'lottie-container'),
+              public_id: result.info.public_id
+            };
+            
+            // Add to project media
+            projectMedia.push(newMediaItem);
+            
+            // Update the hidden textarea
+            document.getElementById(`edit_media_${projectId}`).value = JSON.stringify(projectMedia, null, 2);
+            
+            // Show preview
+            loadProjectMedia(projectId, projectMedia);
+          }
+        });
+        
+        // Open the widget
+        projectWidget.open();
+      } catch (error) {
+        console.error('Error opening upload widget:', error);
+        alert('Error opening upload widget. See console for details.');
+      }
+    }
+
+    // Initialize Cloudinary widget and load projects when the page loads
+    function initializeCloudinaryWidget() {
+      try {
+        console.log('Initializing Cloudinary widget...');
+        
+        // Check if Cloudinary is loaded
+        if (typeof cloudinary === 'undefined') {
+          console.warn('Cloudinary not yet loaded, will retry in 500ms');
+          setTimeout(initializeCloudinaryWidget, 500);
+          return;
+        }
+        
+        // Initialize the widget
+        initializeWidget();
+        
+        // Add event listener for the upload button
+        const uploadButton = document.getElementById('uploadMediaBtn');
+        if (uploadButton) {
+          console.log('Adding event listener to uploadMediaBtn');
+          uploadButton.addEventListener('click', function() {
+            if (myWidget) {
+              myWidget.open();
+            } else {
+              console.error('Upload widget not initialized');
+              alert('Upload widget not initialized. Please reload the page.');
+            }
+          });
+        } else {
+          console.warn('uploadMediaBtn element not found');
+        }
+      } catch (err) {
+        console.error('Error initializing Cloudinary widget:', err);
+      }
+    }
+    
+    // Initialize everything when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Admin panel loaded');
+      console.log('Cloudinary object available:', typeof cloudinary !== 'undefined');
+      if (typeof cloudinary !== 'undefined') {
+        console.log('Cloudinary object methods:', Object.keys(cloudinary).join(', '));
+        console.log('Cloudinary widget method available:', typeof cloudinary.openUploadWidget === 'function');
+      }
+      
+      // Add check preset function
+      window.checkCloudinaryPreset = function() {
+        console.log('Checking Cloudinary preset configuration...');
+        alert(`To configure your Cloudinary preset for JSON uploads:
+
+1. Log in to your Cloudinary dashboard
+2. Go to Settings > Upload > Upload presets
+3. Find "${uploadPreset}" preset and edit it
+4. Make sure:
+   - Resource Type is set to "Auto"
+   - Allowed formats includes JSON or is set to "All formats"
+5. Save your changes and try uploading again
+
+Alternatively, you can create a new preset called "portfolio_json" with these settings.`);
+      };
+      
+      // Display current preset
+      const presetDisplay = document.getElementById('currentPresetDisplay');
+      if (presetDisplay) {
+        presetDisplay.textContent = uploadPreset;
+      }
+      
+      // Setup image error handling for placeholders
+      setupImageErrorHandling();
+      
+      // Load the JSON data
+      loadData();
+      
+      // Initialize Cloudinary widget
+      initializeCloudinaryWidget();
+    });
+    
+    // Centralized initialization function
+    function initializePage() {
+      // Set a timeout to make sure the DOM is fully ready
+      setTimeout(function() {
+        console.log('Initializing page');
+        
+        // Debug Cloudinary availability
+        console.log('Cloudinary object available:', typeof cloudinary !== 'undefined');
+        if (typeof cloudinary !== 'undefined') {
+          console.log('Cloudinary object methods:', Object.keys(cloudinary).join(', '));
+          console.log('Cloudinary widget method available:', typeof cloudinary.openUploadWidget === 'function');
+        }
+        
       loadProjects();
       loadIntroText();
-    });
+        initializeCloudinaryWidget();
+        attachAddProjectButton();
+      }, 100);
+    }
+    
+    // Add the missing loadData function
+    function loadData() {
+      console.log('Loading data...');
+      loadProjects();
+      loadIntroText();
+    }
   </script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Portfolio Admin</h1>
+      <div class="actions">
+        <button id="saveBtn" class="primary-btn">Save Changes</button>
+        <button id="reloadBtn" class="secondary-btn">Reload Data</button>
+      </div>
+    </div>
+    
+    <h1>Manage Projects</h1>
+    
+    <div class="info-box">
+      <h3>Serverless Mode Information</h3>
+      <p>This is the admin panel running in serverless mode. Changes are made locally in your browser and will require you to download the updated JSON files and replace them in your project.</p>
+      <p>To save changes permanently:</p>
+      <ol>
+        <li>Make your changes in this interface</li>
+        <li>Click the "Download JSON" button</li>
+        <li>Replace the corresponding file in your js/ directory</li>
+      </ol>
+      <p><strong>Note about JSON uploads:</strong> If you're trying to upload JSON files (for Lottie animations), your Cloudinary upload preset must allow raw file uploads. Please check your Cloudinary settings if you see an error.</p>
+    </div>
+    
+    <!-- Add a troubleshooting section to help with Cloudinary issues -->
+    <div class="troubleshooting-section">
+      <h3>Cloudinary Setup</h3>
+      <p>If you're having trouble uploading JSON files, try one of these options:</p>
+      
+      <div class="btn-group">
+        <button id="openTestPageBtn" class="secondary-btn" onclick="window.open('cloudinary-json-test.html', '_blank')">Open Test Page</button>
+        <button id="checkPresetBtn" class="secondary-btn" onclick="checkCloudinaryPreset()">Check Preset</button>
+        <button onclick="window.open('fix-cloudinary-preset.js', '_blank')" class="secondary-btn">View Fix Script</button>
+      </div>
+      
+      <div class="json-support-info">
+        <p><strong>Note:</strong> JSON files for Lottie animations will be automatically uploaded as raw files to Cloudinary.</p>
+        <p>Your current preset is: <code id="currentPresetDisplay"></code></p>
+      </div>
+    </div>
+    
+    <!-- Intro Text Management Section -->
+    <div class="form-container">
+      <h2>Edit Intro Text</h2>
+      <label for="introPara1">Intro Paragraph 1:</label>
+      <textarea id="introPara1" rows="5" placeholder="First paragraph of the intro section"></textarea>
+      <label for="introPara2">Intro Paragraph 2:</label>
+      <textarea id="introPara2" rows="5" placeholder="Second paragraph of the intro section"></textarea>
+      <label for="linkedinUrl">LinkedIn URL:</label>
+      <input type="text" id="linkedinUrl" placeholder="Your LinkedIn profile URL">
+      <button onclick="saveIntroText()">Save Intro Text</button>
+      <button class="download-btn" onclick="downloadIntroJson()">Download Intro JSON</button>
+      <div id="introStatus" class="status"></div>
+    </div>
+
+    <!-- Add Project Form -->
+    <div class="form-container">
+      <h2>Add New Project</h2>
+      <label for="name">Name:</label>
+      <input type="text" id="name" placeholder="Project Name">
+      <label for="category">Category:</label>
+      <input type="text" id="category" placeholder="Category">
+      <label for="year">Year:</label>
+      <input type="number" id="year" placeholder="Year">
+      <label for="icon">Icon URL:</label>
+      <input type="text" id="icon" placeholder="e.g., /img/icon_project.svg">
+      <label for="description">Description:</label>
+      <textarea id="description" placeholder="Description"></textarea>
+      <label for="why">Why:</label>
+      <textarea id="why" placeholder="Why"></textarea>
+      <label for="how">How:</label>
+      <textarea id="how" placeholder="How"></textarea>
+      <label for="context">Context:</label>
+      <textarea id="context" placeholder="Context"></textarea>
+      <label for="team">Team:</label>
+      <textarea id="team" placeholder="Team"></textarea>
+      <label for="role">My Role:</label>
+      <textarea id="role" placeholder="My Role"></textarea>
+      <label for="media">Media:</label>
+      <div id="mediaUploadSection">
+        <button type="button" id="uploadMediaBtn" class="upload-btn">Upload Media</button>
+        <p class="media-help">Supported formats: jpg, png, gif, mp4, json (for Lottie)</p>
+        <p class="media-help"><strong>JSON files</strong>: JSON files for Lottie animations will be automatically uploaded as "raw" files to Cloudinary and properly configured in your portfolio.</p>
+        <div id="mediaPreviewContainer" class="media-preview-container"></div>
+        <textarea id="media" placeholder='e.g., [{"type": "image", "src": "/img/cover.png", "alt": "Cover", "class": "first-image"}]' style="display:none;"></textarea>
+      </div>
+      <button id="addProjectBtn" onclick="addProject()">Add Project</button>
+    </div>
+    
+    <!-- Project Management Tools -->
+    <div class="form-container">
+      <h2>Project Management</h2>
+      <button class="download-btn" onclick="downloadProjectsJson()">Download Projects JSON</button>
+      <div id="projectsStatus" class="status"></div>
+    </div>
+
+    <!-- Project List -->
+    <ul id="projectList" class="sortable"></ul>
+    <div id="error"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 </body>
 </html>

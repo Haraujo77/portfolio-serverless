@@ -36,7 +36,34 @@
     return;
   }
 
-  // Function to fetch data from local JSON files instead of API
+  // Global Cloudinary configuration
+  const cloudName = 'dicwtd4pv'; // Replace with your cloud name
+  const placeholderUrl = 'https://res.cloudinary.com/dicwtd4pv/image/upload/v1742144110/portfolio/placeholder_pkmwq9.jpg';
+  
+  // Helper function to handle image loading errors
+  function setupImageErrorHandling() {
+    // Use event delegation for efficiency
+    document.addEventListener('error', function(e) {
+      const target = e.target;
+      // Only handle errors for images and videos
+      if (target.tagName === 'IMG' || target.tagName === 'VIDEO') {
+        console.warn('Media failed to load, replacing with placeholder:', target.src);
+        if (target.src.includes('cloudinary.com')) {
+          // Replace with placeholder
+          target.src = placeholderUrl;
+          // Add class to show it's a placeholder
+          target.classList.add('placeholder-image');
+        }
+      }
+    }, true); // Use capture phase to get all errors
+    
+    console.log('Image error handling set up with placeholder:', placeholderUrl);
+  }
+  
+  // Set up error handling for images as early as possible
+  setupImageErrorHandling();
+
+  // Function to fetch projects data from local JSON files instead of API
   async function fetchProjectsData() {
     try {
       console.log('Fetching projects from local JSON file');
@@ -46,6 +73,56 @@
       }
       const data = await response.json();
       console.log('Successfully loaded projects:', data.length, 'projects');
+      
+      data.forEach(project => {
+        // Ensure icon has a valid URL
+        if (!project.icon || project.icon.includes('undefined')) {
+          project.icon = placeholderUrl;
+        } else if (project.icon.startsWith('/img/')) {
+          // Convert local path to Cloudinary URL if not already a Cloudinary URL
+          if (!project.icon.includes('cloudinary.com')) {
+            // Extract filename from path
+            const filename = project.icon.split('/').pop();
+            // Use folder structure from local path
+            const folderPath = project.icon.replace('/img/', '').split('/').slice(0, -1).join('/');
+            project.icon = `https://res.cloudinary.com/${cloudName}/image/upload/v1/portfolio/${folderPath}/${filename}`;
+          }
+        }
+        
+        // Process media items
+        if (project.media && Array.isArray(project.media)) {
+          project.media.forEach(media => {
+            // Ensure media src has a valid URL
+            if (!media.src || media.src.includes('undefined')) {
+              media.src = placeholderUrl;
+            } else if (media.src.startsWith('/img/')) {
+              // Convert local path to Cloudinary URL if not already a Cloudinary URL
+              if (!media.src.includes('cloudinary.com')) {
+                // Extract filename from path
+                const filename = media.src.split('/').pop();
+                // Use folder structure from local path
+                const folderPath = media.src.replace('/img/', '').split('/').slice(0, -1).join('/');
+                
+                // Determine resource type based on extension
+                let resourceType = 'image';
+                const ext = filename.split('.').pop().toLowerCase();
+                if (['mp4', 'mov', 'webm'].includes(ext)) {
+                  resourceType = 'video';
+                } else if (ext === 'json') {
+                  // Special handling for JSON files (like Lottie animations)
+                  // JSON files should be uploaded to Cloudinary as "raw" files
+                  media.src = `https://res.cloudinary.com/${cloudName}/raw/upload/v1/portfolio/${folderPath}/${filename}`;
+                  // Skip the regular URL construction below
+                  return;
+                }
+                
+                media.src = `https://res.cloudinary.com/${cloudName}/${resourceType}/upload/v1/portfolio/${folderPath}/${filename}`;
+              }
+            }
+          });
+        }
+      });
+      
       return data;
     } catch (error) {
       console.warn('Error loading projects, using sample data:', error.message);
@@ -189,9 +266,11 @@
           mediaHtml += `<video src="${m.src}" class="${m.class}" muted loop playsinline></video>`;
         } else if (m.type === 'lottie') {
           mediaHtml += `
-            <div class="${m.class}" data-lottie-path="${m.src}" 
+            <div class="${m.class}" data-lottie-path="${m.src}" src="${m.src}"
                  ${m['data-preserve-aspect'] ? `data-preserve-aspect="${m['data-preserve-aspect']}"` : ''} 
-                 ${m.style ? `style="${m.style}"` : ''}></div>
+                 ${m.style ? `style="${m.style}"` : ''}
+                 data-alt="${m.alt || 'Lottie animation'}"
+                 data-public-id="${m.public_id || ''}"></div>
           `;
         }
       });
@@ -260,30 +339,61 @@
 
     // Lottie Initialization
     document.querySelectorAll('.lottie-container').forEach(container => {
-      const animationPath = container.getAttribute('data-lottie-path');
+      // Get the animation path from the container's data attribute or src attribute
+      const animationPath = container.getAttribute('data-lottie-path') || container.getAttribute('src');
+      if (!animationPath) {
+        console.error('No animation path found for Lottie container:', container);
+        container.innerHTML = '<div style="color:red;padding:10px;">Error: No animation path</div>';
+        return;
+      }
+      
       const preserveAspect = container.getAttribute('data-preserve-aspect') || 'xMidYMid meet';
       console.log('Loading Lottie animation from:', animationPath);
-      const animInstance = lottie.loadAnimation({
-        container,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        path: animationPath
-      });
-      animInstance.addEventListener('DOMLoaded', () => {
-        const svg = container.querySelector('svg');
-        if (svg) {
-          svg.setAttribute('preserveAspectRatio', preserveAspect);
-          console.log('Lottie SVG loaded for:', animationPath);
-        } else {
-          console.error('No SVG rendered for Lottie:', animationPath);
-        }
-      });
-      animInstance.addEventListener('error', (err) => {
-        console.error('Lottie loading error:', err, 'Path:', animationPath);
-      });
+      
+      try {
+        const animInstance = lottie.loadAnimation({
+          container,
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          path: animationPath
+        });
+        
+        animInstance.addEventListener('DOMLoaded', () => {
+          const svg = container.querySelector('svg');
+          if (svg) {
+            svg.setAttribute('preserveAspectRatio', preserveAspect);
+            console.log('Lottie SVG loaded successfully for:', animationPath);
+            // Add a success class to the container
+            container.classList.add('lottie-loaded');
+          } else {
+            console.error('No SVG rendered for Lottie:', animationPath);
+            container.innerHTML = '<div style="color:red;padding:10px;">Error: No SVG rendered</div>';
+          }
+        });
+        
+        animInstance.addEventListener('error', (err) => {
+          console.error('Lottie loading error:', err, 'Path:', animationPath);
+          container.innerHTML = `<div style="color:red;padding:10px;">Error loading animation: ${err.message || 'Unknown error'}</div>`;
+        });
+        
+        // Add a timeout to detect if animation doesn't load
+        setTimeout(() => {
+          if (!container.classList.contains('lottie-loaded')) {
+            console.warn('Lottie animation may have failed to load (timeout):', animationPath);
+          }
+        }, 5000);
+      } catch (err) {
+        console.error('Exception initializing Lottie:', err, 'Path:', animationPath);
+        container.innerHTML = `<div style="color:red;padding:10px;">Error initializing: ${err.message || 'Unknown error'}</div>`;
+      }
     });
-    console.log('Lottie containers found:', document.querySelectorAll('.lottie-container').length);
+    
+    const lottieContainers = document.querySelectorAll('.lottie-container');
+    console.log('Lottie containers found:', lottieContainers.length);
+    if (lottieContainers.length === 0) {
+      console.warn('No Lottie containers found in the document');
+    }
 
     // Hash-based deep link & initial setup
     const allSections = document.querySelectorAll('.section');
