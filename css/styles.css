@@ -14,12 +14,23 @@
   --font-size-md: 1rem;     /* 16px */
   --font-size-lg: 1.25rem;  /* 20px */
   --font-size-xl: 1.5rem;   /* 24px */
-  --font-size-xs: 0.75rem; /* 10px */
+  --font-size-xs: 0.75rem;  /* 12px */
+  --font-size-xxs: 0.69rem; /* 10.4px - for smallest text elements */
+  
+  /* Layout & Grid */
+  --max-grid-width: 4000px; /* Maximum width for all grid containers */
   
   /* Spacing & Layout */
   --spacing-grid-gap: 5px;        /* Espaçamento entre elementos do grid */
   --spacing-image-margin: 0px;       /* Remove margens padrão das imagens */
   --spacing-container-padding: 5px; /* Padding lateral dos contêineres */
+  --spacing-lg: 20px;
+  --spacing-md: 10px;
+  --spacing-xxxl: 40px;
+  --text-padding: 10px;          /* Standard padding for text elements */
+  --text-padding-mobile: 20px;   /* Mobile padding for text elements */
+  --project-gap: 300px;          /* Gap between projects */
+  --project-gap-mobile: 50px;    /* Gap between projects on mobile */
   
   /* Border Radius */
   --radius-img: 24px;       /* Border radius para imagens e vídeos */
@@ -88,7 +99,7 @@ body.dark a {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: var(--spacing-container-padding); /* Usando a variável aqui */
+  padding: var(--spacing-container-padding);
   box-sizing: border-box;
   margin-left: 300px; 
   scroll-snap-type: y mandatory;
@@ -100,12 +111,13 @@ body.dark a {
   grid-template-columns: repeat(4, 1fr);
   gap: var(--spacing-grid-gap);
   align-items: start;
-  max-width: 1920px;
+  max-width: var(--max-grid-width);
   margin: 0 auto;
 }
+
 .intro-grid p {
   background: none;
-  padding: 10px; /* layout px */
+  padding: var(--text-padding); /* Using the global variable */
   margin: 0;
   line-height: 1.2;
   transition: background 0.3s ease, color 0.3s ease;
@@ -115,11 +127,11 @@ body.dark a {
   font-size: 48px;
   grid-column: span 3;
 }
+
 .intro-para-2 {
   font-size: var(--font-size-md); /* 16px for secondary */
   grid-column: span 1;
   margin-top: 7px !important;
-
 }
 
 /* 
@@ -128,8 +140,8 @@ body.dark a {
 */
 .intro-bottom {
   margin: 0 auto 24px auto;
-  max-width: 1920px;
-  padding: var(--spacing-container-padding);
+  max-width: var(--max-grid-width);
+  padding: var(--text-padding);
   width: 100%;
 }
 
@@ -218,7 +230,7 @@ body.dark a {
 ************************************************/
 .icon-caption {
   position: absolute;
-  font-size: var(--font-size-xs); /* was 10px => 14px => 0.875rem => we chose 0.625 => 10px but we can match 14px instead */
+  font-size: var(--font-size-xxs); /* Using the correct variable name */
   line-height: 1.2em;
   color: #333;
   pointer-events: none;
@@ -249,7 +261,7 @@ body.dark a {
   scroll-snap-align: start;
   border-bottom: 0px solid #ddd;
   background: none;
-  margin-bottom: 100px;
+  margin-bottom: var(--project-gap);
   padding: 20px var(--spacing-container-padding);
   transition: background 0.3s ease, color 0.3s ease;
 }
@@ -258,13 +270,13 @@ body.dark a {
   grid-template-columns: repeat(4, 1fr);
   gap: var(--spacing-grid-gap);
   align-items: stretch;
-  max-width: 1920px;
+  max-width: var(--max-grid-width);
   margin: 0 auto;
 }
 .section-grid p {
   background: var(--color-bg-light);
   color: var(--color-text-light);
-  padding: 10px;
+  padding: var(--text-padding); /* Using the global variable */
   transition: background 0.3s ease, color 0.3s ease;
 }
 /* Large paragraphs in each section */
@@ -438,15 +450,15 @@ img {
   }
 
   .para-1 {
-    padding: 20px 20px 0px 20px !important;
+    padding: var(--text-padding-mobile) var(--text-padding-mobile) 0 var(--text-padding-mobile) !important;
   }  
 
   .para-2 {
-    padding: 20px 20px 0px 20px !important;
+    padding: var(--text-padding-mobile) var(--text-padding-mobile) 0 var(--text-padding-mobile) !important;
   }  
 
   .para-3 {
-    padding: 20px 20px 20px 20px !important;
+    padding: var(--text-padding-mobile) var(--text-padding-mobile) var(--text-padding-mobile) var(--text-padding-mobile) !important;
   }  
 
   /* Theme toggle on mobile */
@@ -526,6 +538,11 @@ img {
     gap: var(--spacing-grid-gap);
   }
   
+  .lottie-container {
+    aspect-ratio: 1 / 1 !important; 
+  }
+
+
   /* Full-width items => span 2 columns */
   .para-1,
   .para-2,
@@ -536,6 +553,8 @@ img {
   .img-4col,
   .video-2col,
   .video-3col,
+  .lottie-container,
+  .lottie-container.match-1col, 
   .video-4col {
     grid-column: span 2 !important;
   }
@@ -599,6 +618,8 @@ img {
   :root {
     --spacing-grid-gap: 5px; /* Gap menor para dispositivos móveis */
     --spacing-container-padding: 5px; /* Padding maior para mobile */
+    --text-padding: var(--text-padding-mobile); /* Use mobile text padding */
+    --project-gap: var(--project-gap-mobile); /* Use mobile project gap */
   }
 
 }
@@ -715,4 +736,93 @@ body.dark .linkedin-button:hover {
   background-color: transparent;
   border-color: var(--color-bg-light);
   color: var(--color-text-dark) !important;
+}
+
+/*******************************
+2.5) ABOUT SECTION
+*******************************/
+
+.about-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--spacing-container-padding);
+  box-sizing: border-box;
+  margin-left: 300px;
+  scroll-snap-type: y mandatory;
+}
+
+/* Grid for the about text blocks */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-grid-gap);
+  align-items: start;
+  max-width: var(--max-grid-width);
+  margin: 0 auto;
+}
+
+.about-grid p {
+  background: none;
+  padding: var(--text-padding); /* Using the global variable */
+  margin: 0;
+  line-height: 1.2;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.about-para-1 {
+  font-size: 24px;
+  grid-column: span 3;
+}
+
+.about-para-2 {
+  font-size: var(--font-size-md);
+  grid-column: span 1;
+  margin-top: 7px !important;
+}
+
+.about-bottom {
+  margin: 0 auto 24px auto;
+  max-width: var(--max-grid-width);
+  padding: var(--text-padding);
+  width: 100%;
+}
+
+/* For responsive design */
+@media (max-width: 1024px) {
+  /* Intro single column */
+  .intro-grid {
+    grid-template-columns: 2fr !important;
+  }
+  .intro-section {
+    margin-left: 0;
+    display: block;
+    height: auto;
+  }
+
+  .intro-para-1 {
+    font-size: var(--font-size-xl);
+  }
+
+  /* About section responsive styles */
+  .about-grid {
+    grid-template-columns: 2fr !important;
+  }
+  
+  .about-section {
+    margin-left: 0;
+    display: block;
+    height: auto;
+  }
+  
+  .about-para-1 {
+    font-size: var(--font-size-xl);
+    grid-column: span 1;
+  }
+  
+  .about-para-2 {
+    font-size: var(--font-size-md);
+    grid-column: span 1;
+  }
 }
